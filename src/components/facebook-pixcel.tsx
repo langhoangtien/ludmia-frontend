@@ -2,12 +2,13 @@
 /* eslint-disable prefer-spread */
 /* eslint-disable prefer-rest-params */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { API_URL } from "@/config";
+import { API_URL, BRANCH } from "@/config";
 import { useEffect } from "react";
 
 const FacebookPixel = () => {
   useEffect(() => {
     const initFacebookPixel = async () => {
+      if (BRANCH === "optilife") return;
       try {
         const settings = await fetch(`${API_URL}/settings/client`);
         const settingsJson = await settings.json();
