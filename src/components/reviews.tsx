@@ -273,7 +273,11 @@ const ReviewList: React.FC = () => {
           </Button>
         </div>
 
-        <Select onValueChange={handleChangeSort} defaultValue="createdAt_desc">
+        <Select
+          value={`${filters.sortBy}_${filters.sortOrder}`}
+          onValueChange={handleChangeSort}
+          defaultValue="createdAt_desc"
+        >
           <SelectTrigger className="w-32 rounded-xs">
             <SelectValue placeholder="Sort by" />
           </SelectTrigger>
