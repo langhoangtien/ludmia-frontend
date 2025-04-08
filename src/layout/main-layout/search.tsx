@@ -3,6 +3,7 @@ import Image from "@/components/image";
 import SpinerLoading from "@/components/loading/spiner-loading";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+
 import {
   Sheet,
   SheetClose,
@@ -11,9 +12,10 @@ import {
 } from "@/components/ui/sheet";
 import { API_URL } from "@/config";
 import { useDebounce } from "@/hooks/use-debounce";
-import { Link } from "@tanstack/react-router";
-import { SearchIcon, X } from "lucide-react";
+import { Link, useNavigate } from "@tanstack/react-router";
+import { ArrowRight, SearchIcon, X, XIcon } from "lucide-react";
 import { useEffect, useState } from "react";
+
 function highlightText(text: string, query: string) {
   const parts = text.split(new RegExp(`(${query})`, "gi"));
   return parts.map((part, i) =>
@@ -33,6 +35,7 @@ export default function SearchHeader() {
   const [loading, setLoading] = useState(false);
   const debouncedQuery = useDebounce(query, 500);
   const [open, setOpen] = useState(false);
+  const navigate = useNavigate();
   const handleCloseSheet = (value: boolean) => {
     setQuery("");
     setOpen(value);
@@ -50,6 +53,22 @@ export default function SearchHeader() {
       .catch((err) => console.error(err))
       .finally(() => setLoading(false));
   }, [debouncedQuery]);
+
+  const handleSearch = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    const value = e.currentTarget.value;
+    setQuery(value);
+
+    if (e.key === "Enter") {
+      e.preventDefault();
+      setOpen(false);
+      navigate({ to: `/search?q=${value}` });
+    }
+  };
+
+  const handleRedirect = () => {
+    setOpen(false);
+    navigate({ to: `/search?q=${query}` });
+  };
   return (
     <Sheet open={open} onOpenChange={handleCloseSheet}>
       <SheetTrigger asChild>
@@ -61,41 +80,65 @@ export default function SearchHeader() {
         </Button>
       </SheetTrigger>
       <SheetContent showClose={false} side={"top"}>
-        <div className="w-full flex flex-row space-x-4 justify-center items-center py-8 px-4">
-          <div className="relative w-full max-w-2xl">
-            <div className="absolute inset-y-0 end-0 flex items-center pe-3.5 pointer-events-none">
-              <SearchIcon className="w-5 h-5 text-gray-500" />
+        <div className="w-full relative flex flex-row space-x-4 justify-center items-center py-8 px-4">
+          <div className="w-full md:relative max-w-2xl">
+            <div className="relative z-20 ">
+              <div className="absolute inset-y-0 end-0 flex items-center space-x-1 pe-3.5 ">
+                {!!query && (
+                  <div className="flex items-center space-x-2">
+                    <Button
+                      onClick={() => setQuery("")}
+                      variant="outline"
+                      className="rounded-full z-30 size-5 cursor-pointer "
+                      size="icon"
+                    >
+                      <XIcon className="size-3" />
+                    </Button>
+                    <span className="w-[1px] mx-2 h-8 bg-gray-500"></span>
+                  </div>
+                )}
+
+                <Button
+                  onClick={handleRedirect}
+                  variant="ghost"
+                  size="icon"
+                  className="dark:hover:bg-background"
+                >
+                  <SearchIcon className="size-5 " />
+                </Button>
+              </div>
+              <input
+                type="text"
+                id="small_filled"
+                value={query}
+                onKeyDown={handleSearch}
+                onChange={(e) => setQuery(e.target.value)}
+                className="block bg-background  rounded-lg px-2.5 pb-2 border pt-5 w-full  text-base text-gray-700  focus-visible:outline-none focus-visible:ring focus-visible:ring-accent-foreground focus-visible:ring-offset appearance-none peer"
+                placeholder=" "
+              />
+              <label
+                htmlFor="small_filled"
+                className="absolute text-base text-gray-500 duration-300 transform -translate-y-3 scale-75 top-3.5 z-10 origin-[0] start-2.5  peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-3 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto"
+              >
+                Search
+              </label>
             </div>
-            <input
-              type="text"
-              id="small_filled"
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              className="block z-50 rounded-lg px-2.5 pb-2 border pt-5 w-full text-sm text-gray-700  focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-700 focus-visible:ring-offset appearance-none peer"
-              placeholder=" "
-            />
-            <label
-              htmlFor="small_filled"
-              className="absolute text-base text-gray-500 duration-300 transform -translate-y-3 scale-75 top-3.5 z-10 origin-[0] start-2.5  peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-3 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto"
-            >
-              Search
-            </label>
             {query && (
-              <Card className="absolute left-0 z-10 top-12 w-full rounded-b-md rounded-t-none  shadow-lg">
-                <CardContent className="p-2">
+              <Card className="absolute  left-0 z-10 md:top-12 pb-0 top-24 w-full border-t-0 rounded-b-md rounded-t-none  shadow-lg">
+                <CardContent className="p-0">
                   {loading && (
-                    <div className="w-full flex justify-center items-center">
+                    <div className="w-full p-2 flex justify-center items-center">
                       {" "}
                       <SpinerLoading />
                     </div>
                   )}
                   {!loading && products.length === 0 && (
-                    <p className="text-center text-gray-500">
+                    <p className="text-center p-2 text-gray-500">
                       No products found
                     </p>
                   )}
                   {!loading && !!products.length && (
-                    <div className="flex flex-col gap-2 max-h-80 overflow-y-auto">
+                    <div className="flex flex-col p-2 gap-2 max-h-[420px] overflow-y-auto">
                       <p className="text-xs font-semibold text-gray-500 border-b  border-border pb-2 mb-2">
                         PRODUCTS
                       </p>
@@ -129,6 +172,18 @@ export default function SearchHeader() {
                           </div>
                         </Link>
                       ))}
+                    </div>
+                  )}
+                  {!loading && (
+                    <div
+                      onClick={handleRedirect}
+                      className="flex cursor-pointer items-center p-2 mt-2 border-t border-border justify-between"
+                    >
+                      <span>Search for "{query}"</span>
+                      <ArrowRight
+                        strokeWidth={1.25}
+                        className="size-5 text-gray-500 cursor-pointer"
+                      />
                     </div>
                   )}
                 </CardContent>

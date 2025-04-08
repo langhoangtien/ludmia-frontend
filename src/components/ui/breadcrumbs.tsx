@@ -1,3 +1,4 @@
+import { Fragment } from "react/jsx-runtime";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -23,20 +24,23 @@ export default function Breadcrumbs({ items, className }: BreadcrumbsProps) {
     <div className="p-4">
       <Breadcrumb className={className}>
         <BreadcrumbList>
-          {items.map((item, index) => (
-            <BreadcrumbItem key={index}>
-              {item.isCurrent ? (
-                <BreadcrumbPage>{item.label}</BreadcrumbPage>
-              ) : (
-                <>
-                  <BreadcrumbLink to={item.href || "#"}>
-                    {item.label}
-                  </BreadcrumbLink>
-                  {index < items.length - 1 && <BreadcrumbSeparator />}
-                </>
-              )}
-            </BreadcrumbItem>
-          ))}
+          {items.map((item, index) => {
+            const isLast = index === items.length - 1;
+            return (
+              <Fragment key={index}>
+                <BreadcrumbItem>
+                  {item.isCurrent || isLast ? (
+                    <BreadcrumbPage>{item.label}</BreadcrumbPage>
+                  ) : (
+                    <BreadcrumbLink to={item.href || "#"}>
+                      {item.label}
+                    </BreadcrumbLink>
+                  )}
+                </BreadcrumbItem>
+                {!isLast && <BreadcrumbSeparator />}
+              </Fragment>
+            );
+          })}
         </BreadcrumbList>
       </Breadcrumb>
     </div>

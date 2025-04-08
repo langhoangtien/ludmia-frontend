@@ -1,7 +1,6 @@
 import * as React from "react";
 import { CONFIG } from "./config";
 import { User } from "./routes/admin/users";
-import SpinerLoading from "./components/loading/spiner-loading";
 
 export interface ResponseLogin {
   token: string;
@@ -13,29 +12,26 @@ export interface AuthContext {
   login: (username: string, password: string) => Promise<ResponseLogin>;
   logout: () => void;
   user: User | null;
-  initialize: () => Promise<void>;
+  isLoading: boolean;
 }
-
 export const STORAGE_KEY = "token";
-
 const INIT_AUTH_CONTEXT: AuthContext = {
   isAuthenticated: false,
   login: async () => {
-    throw new Error("AuthProvider not yet loading");
+    throw new Error("AuthProvider not yet initialized");
   },
   logout: () => {
-    throw new Error("AuthProvider not yet loading");
+    throw new Error("AuthProvider not yet initialized");
   },
+  isLoading: false,
   user: null,
-  initialize: async () => {},
 };
-
 const AuthContext = React.createContext<AuthContext>(INIT_AUTH_CONTEXT);
-
 const key = STORAGE_KEY;
 
 async function getStoredUser(): Promise<User | null> {
   const token = localStorage.getItem(key);
+
   if (!token) return null;
 
   try {
@@ -54,6 +50,7 @@ async function getStoredUser(): Promise<User | null> {
     }
 
     const user = await response.json();
+
     return user;
   } catch {
     localStorage.removeItem(key);
@@ -71,19 +68,26 @@ function setStoredUser(token: string | null) {
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = React.useState<User | null>(null);
-  const [loading, setLoading] = React.useState(false);
+  const [isLoading, setIsLoading] = React.useState(false);
 
+  // const navigate = useNavigate();
   const isAuthenticated = !!user;
 
-  const initialize = React.useCallback(async () => {
-    if (user) return;
-    setLoading(true);
-    const storedUser = await getStoredUser();
-    if (storedUser) {
-      setUser(storedUser);
+  React.useEffect(() => {
+    async function initialize() {
+      // Bắt đầu loading
+      setIsLoading(true);
+      const storedUser = await getStoredUser();
+      if (storedUser) {
+        setUser(storedUser);
+      }
+      console.log("storedUser", storedUser);
+
+      setIsLoading(false);
+      // Kết thúc loading
     }
-    setLoading(false);
-  }, [user]);
+    initialize();
+  }, []);
 
   const login = React.useCallback(
     async (username: string, password: string) => {
@@ -95,15 +99,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       });
 
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData?.message || "Invalid credentials");
+        throw new Error("Invalid credentials");
       }
 
       const data: ResponseLogin = await response.json();
       setStoredUser(data.token);
       setUser(data.user);
-
-      return data;
+      return data; // Trả về để sử dụng trong component
     },
     []
   );
@@ -111,20 +113,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const logout = React.useCallback(() => {
     setStoredUser(null);
     setUser(null);
-    setLoading(false);
+    // navigate({ to: "/login" });
   }, []);
-
-  if (loading) {
-    return (
-      <div className="flex items-center w-full justify-center h-screen">
-        <SpinerLoading />
-      </div>
-    );
-  }
 
   return (
     <AuthContext.Provider
-      value={{ isAuthenticated, user, login, logout, initialize }}
+      value={{ isAuthenticated, user, login, logout, isLoading }}
     >
       {children}
     </AuthContext.Provider>

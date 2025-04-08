@@ -3,10 +3,23 @@
 @plugin "tailwindcss-animate";
 
 @custom-variant dark (&:is(.dark *));
-
+@theme {
+  --default-font-family:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
 :root {
   /* --radius: 0.625rem; */
-
+  /* font-family:
+    -apple-system,
+    BlinkMacSystemFont,
+    Segoe UI,
+    Roboto,
+    Ubuntu,
+    Helvetica Neue,
+    sans-serif,
+    Apple Color Emoji,
+    Segoe UI Emoji,
+    Segoe UI Symbol; */
   --radius: 0.225rem;
   --background: oklch(1 0 0);
   --foreground: oklch(0.129 0.042 264.695);

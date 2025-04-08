@@ -53,7 +53,11 @@ export default function ProductPage() {
   const productData = useLoaderData({
     from: "/products/$productId",
   });
-
+  const slides = [...productData.images];
+  for (let index = 0; index < productData.variants.length; index++) {
+    const element = productData.variants[index];
+    if (element.image) slides.push(element.image);
+  }
   const product: IData = {
     ...productData,
     variants: productData.variants.map((variant: IVariant) => ({
@@ -68,7 +72,7 @@ export default function ProductPage() {
       <div className="grid grid-cols-12  gap-6">
         {/* Hình ảnh */}
         <div className="col-span-12 md:col-span-7 ">
-          <ProductDetailCarousel slides={product.images} />
+          <ProductDetailCarousel slides={slides} />
         </div>
 
         {/* Nội dung */}

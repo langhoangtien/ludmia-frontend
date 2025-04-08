@@ -14,6 +14,7 @@ import { Route as rootRoute } from './routes/__root'
 import { Route as TrackOrderImport } from './routes/track-order'
 import { Route as TermsOfServiceImport } from './routes/terms-of-service'
 import { Route as ShippingPolicyImport } from './routes/shipping-policy'
+import { Route as SearchImport } from './routes/search'
 import { Route as RefundAndCancellationPolicyImport } from './routes/refund-and-cancellation-policy'
 import { Route as PrivacyPolicyImport } from './routes/privacy-policy'
 import { Route as OrderCompleteImport } from './routes/order-complete'
@@ -75,6 +76,12 @@ const TermsOfServiceRoute = TermsOfServiceImport.update({
 const ShippingPolicyRoute = ShippingPolicyImport.update({
   id: '/shipping-policy',
   path: '/shipping-policy',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const SearchRoute = SearchImport.update({
+  id: '/search',
+  path: '/search',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -453,6 +460,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof RefundAndCancellationPolicyImport
       parentRoute: typeof rootRoute
     }
+    '/search': {
+      id: '/search'
+      path: '/search'
+      fullPath: '/search'
+      preLoaderRoute: typeof SearchImport
+      parentRoute: typeof rootRoute
+    }
     '/shipping-policy': {
       id: '/shipping-policy'
       path: '/shipping-policy'
@@ -769,6 +783,7 @@ export interface FileRoutesByFullPath {
   '/order-complete': typeof OrderCompleteRoute
   '/privacy-policy': typeof PrivacyPolicyRoute
   '/refund-and-cancellation-policy': typeof RefundAndCancellationPolicyRoute
+  '/search': typeof SearchRoute
   '/shipping-policy': typeof ShippingPolicyRoute
   '/terms-of-service': typeof TermsOfServiceRoute
   '/track-order': typeof TrackOrderRoute
@@ -816,6 +831,7 @@ export interface FileRoutesByTo {
   '/order-complete': typeof OrderCompleteRoute
   '/privacy-policy': typeof PrivacyPolicyRoute
   '/refund-and-cancellation-policy': typeof RefundAndCancellationPolicyRoute
+  '/search': typeof SearchRoute
   '/shipping-policy': typeof ShippingPolicyRoute
   '/terms-of-service': typeof TermsOfServiceRoute
   '/track-order': typeof TrackOrderRoute
@@ -866,6 +882,7 @@ export interface FileRoutesById {
   '/order-complete': typeof OrderCompleteRoute
   '/privacy-policy': typeof PrivacyPolicyRoute
   '/refund-and-cancellation-policy': typeof RefundAndCancellationPolicyRoute
+  '/search': typeof SearchRoute
   '/shipping-policy': typeof ShippingPolicyRoute
   '/terms-of-service': typeof TermsOfServiceRoute
   '/track-order': typeof TrackOrderRoute
@@ -917,6 +934,7 @@ export interface FileRouteTypes {
     | '/order-complete'
     | '/privacy-policy'
     | '/refund-and-cancellation-policy'
+    | '/search'
     | '/shipping-policy'
     | '/terms-of-service'
     | '/track-order'
@@ -963,6 +981,7 @@ export interface FileRouteTypes {
     | '/order-complete'
     | '/privacy-policy'
     | '/refund-and-cancellation-policy'
+    | '/search'
     | '/shipping-policy'
     | '/terms-of-service'
     | '/track-order'
@@ -1011,6 +1030,7 @@ export interface FileRouteTypes {
     | '/order-complete'
     | '/privacy-policy'
     | '/refund-and-cancellation-policy'
+    | '/search'
     | '/shipping-policy'
     | '/terms-of-service'
     | '/track-order'
@@ -1061,6 +1081,7 @@ export interface RootRouteChildren {
   OrderCompleteRoute: typeof OrderCompleteRoute
   PrivacyPolicyRoute: typeof PrivacyPolicyRoute
   RefundAndCancellationPolicyRoute: typeof RefundAndCancellationPolicyRoute
+  SearchRoute: typeof SearchRoute
   ShippingPolicyRoute: typeof ShippingPolicyRoute
   TermsOfServiceRoute: typeof TermsOfServiceRoute
   TrackOrderRoute: typeof TrackOrderRoute
@@ -1083,6 +1104,7 @@ const rootRouteChildren: RootRouteChildren = {
   OrderCompleteRoute: OrderCompleteRoute,
   PrivacyPolicyRoute: PrivacyPolicyRoute,
   RefundAndCancellationPolicyRoute: RefundAndCancellationPolicyRoute,
+  SearchRoute: SearchRoute,
   ShippingPolicyRoute: ShippingPolicyRoute,
   TermsOfServiceRoute: TermsOfServiceRoute,
   TrackOrderRoute: TrackOrderRoute,
@@ -1114,6 +1136,7 @@ export const routeTree = rootRoute
         "/order-complete",
         "/privacy-policy",
         "/refund-and-cancellation-policy",
+        "/search",
         "/shipping-policy",
         "/terms-of-service",
         "/track-order"
@@ -1199,6 +1222,9 @@ export const routeTree = rootRoute
     },
     "/refund-and-cancellation-policy": {
       "filePath": "refund-and-cancellation-policy.tsx"
+    },
+    "/search": {
+      "filePath": "search.tsx"
     },
     "/shipping-policy": {
       "filePath": "shipping-policy.tsx"

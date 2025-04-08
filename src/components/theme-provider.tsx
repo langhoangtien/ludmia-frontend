@@ -91,9 +91,6 @@ export function ThemeProvider({
         : "light";
       root.classList.add(systemTheme);
     } else {
-      console.log("theme", theme);
-      console.log("BRANCH", BRANCH === "quitmood");
-
       root.classList.add(theme);
     }
 

@@ -91,9 +91,9 @@ export default function Dashboard() {
 
   return (
     <div className="p-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-      {data.map((item, index) => (
-        <Card>
-          <CardContent key={index}>
+      {data.map((item) => (
+        <Card key={item.title}>
+          <CardContent>
             <CardDescription>{item.title}</CardDescription>
             <p className="text-3xl font-semibold"> {item.value} </p>
             <p className="text-green-500">0%</p>
@@ -114,27 +114,29 @@ export default function Dashboard() {
       </div>
       <div className="col-span-1 lg:col-span-1">
         <Card>
-          <Table>
-            <TableCaption>Try cập theo quốc gia.</TableCaption>
-            <TableHeader>
-              <TableRow>
-                <TableHead className="w-[100px]">Quốc gia</TableHead>
-                <TableHead>Lượt ghé qua</TableHead>
-                <TableHead>Lượt thêm vào giỏ hàng</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {visitor.topCountries.map((country) => (
-                <TableRow key={country.country}>
-                  <TableCell className="font-medium">
-                    {country.country}
-                  </TableCell>
-                  <TableCell>{country.count}</TableCell>
-                  <TableCell>{country.countAddToCart}</TableCell>
+          <CardContent>
+            <Table>
+              <TableCaption>Try cập theo quốc gia.</TableCaption>
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="w-[100px]">Quốc gia</TableHead>
+                  <TableHead>Lượt ghé qua</TableHead>
+                  <TableHead>Lượt thêm vào giỏ hàng</TableHead>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+              </TableHeader>
+              <TableBody>
+                {visitor.topCountries.map((country) => (
+                  <TableRow key={country.country}>
+                    <TableCell className="font-medium">
+                      {country.country}
+                    </TableCell>
+                    <TableCell>{country.count}</TableCell>
+                    <TableCell>{country.countAddToCart}</TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </CardContent>
         </Card>
       </div>
     </div>
