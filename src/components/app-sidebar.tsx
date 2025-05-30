@@ -3,6 +3,7 @@ import {
   AudioWaveform,
   BookOpen,
   Command,
+  ContactIcon,
   FilePenLine,
   Frame,
   GalleryVerticalEnd,
@@ -155,6 +156,12 @@ const data = {
         },
       ],
     },
+    {
+      title: "Liên hệ",
+      url: "/admin/contacts",
+      icon: ContactIcon,
+    },
+
     {
       title: "Cài đặt",
       url: "/admin/settings",

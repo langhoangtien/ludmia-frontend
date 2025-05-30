@@ -28,7 +28,7 @@ export interface IResponseBlogs {
   };
 }
 
-export default function Blogpage() {
+export default function Blogpage({ collection }: { collection?: string }) {
   const [blogs, setBlogs] = useState<IBlog[]>([]);
   const [loading, setLoading] = useState(true);
   const [pagination, setPagination] = useState({ total: 0, totalPages: 0 });
@@ -39,6 +39,7 @@ export default function Blogpage() {
       const queryParams = new URLSearchParams({
         page: page.toString(),
         limit: "6",
+        ...(collection && { collection }),
       });
 
       const res = await fetch(`${API_URL}/blogs?${queryParams}`);
@@ -61,6 +62,7 @@ export default function Blogpage() {
   };
   useEffect(() => {
     fetchBlogs(1, true);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   if (loading) return <Skeleton className="h-40 w-full" />;
@@ -109,7 +111,7 @@ export function BlogList({ blogs }: { blogs: IBlog[] }) {
           <h4>
             <Link
               to={`/blogs/${blog.slug}`}
-              className="block text-dark font-bold text-xl mb-3.5"
+              className="block font-bold text-xl mb-3.5"
             >
               <span className="bg-linear-to-r from-primary/50 to-primary/40 bg-[length:0px_10px] bg-left-bottom bg-no-repeat transition-[background-size] duration-500 hover:bg-[length:100%_3px] group-hover:bg-[length:100%_10px]">
                 {blog.title}
@@ -135,7 +137,20 @@ export function BlogList({ blogs }: { blogs: IBlog[] }) {
                 }).format(new Date(blog.createdAt))}
               </p>
             </div>
-            <Badge>{!!blog.collections[0] && blog.collections[0]}</Badge>
+
+            <div className="flex flex-wrap items-center gap-2">
+              {blog.collections.map((collection, index) => (
+                <Link
+                  key={index}
+                  to={`/blogs/collection/${collection.value}`}
+                  className="inline-block"
+                >
+                  <Badge variant="secondary" className="px-4 py-1">
+                    {collection.title}
+                  </Badge>
+                </Link>
+              ))}
+            </div>
           </div>
         </div>
       ))}

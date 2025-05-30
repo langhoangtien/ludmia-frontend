@@ -44,7 +44,9 @@ import { Route as AdminReviewsIndexImport } from './routes/admin/reviews/index'
 import { Route as AdminProductsIndexImport } from './routes/admin/products/index'
 import { Route as AdminOrdersIndexImport } from './routes/admin/orders/index'
 import { Route as AdminEmailsIndexImport } from './routes/admin/emails/index'
+import { Route as AdminContactsIndexImport } from './routes/admin/contacts/index'
 import { Route as AdminBlogsIndexImport } from './routes/admin/blogs/index'
+import { Route as BlogsCollectionCollectionSlugImport } from './routes/blogs/collection/$collectionSlug'
 import { Route as AdminUsersCreateImport } from './routes/admin/users/create'
 import { Route as AdminUsersUserIdImport } from './routes/admin/users/$userId'
 import { Route as AdminReviewsImportImport } from './routes/admin/reviews/import'
@@ -260,11 +262,24 @@ const AdminEmailsIndexRoute = AdminEmailsIndexImport.update({
   getParentRoute: () => AdminRouteRoute,
 } as any)
 
+const AdminContactsIndexRoute = AdminContactsIndexImport.update({
+  id: '/contacts/',
+  path: '/contacts/',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
+
 const AdminBlogsIndexRoute = AdminBlogsIndexImport.update({
   id: '/blogs/',
   path: '/blogs/',
   getParentRoute: () => AdminRouteRoute,
 } as any)
+
+const BlogsCollectionCollectionSlugRoute =
+  BlogsCollectionCollectionSlugImport.update({
+    id: '/collection/$collectionSlug',
+    path: '/collection/$collectionSlug',
+    getParentRoute: () => BlogsRouteRoute,
+  } as any)
 
 const AdminUsersCreateRoute = AdminUsersCreateImport.update({
   id: '/users/create',
@@ -635,11 +650,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminUsersCreateImport
       parentRoute: typeof AdminRouteImport
     }
+    '/blogs/collection/$collectionSlug': {
+      id: '/blogs/collection/$collectionSlug'
+      path: '/collection/$collectionSlug'
+      fullPath: '/blogs/collection/$collectionSlug'
+      preLoaderRoute: typeof BlogsCollectionCollectionSlugImport
+      parentRoute: typeof BlogsRouteImport
+    }
     '/admin/blogs/': {
       id: '/admin/blogs/'
       path: '/blogs'
       fullPath: '/admin/blogs'
       preLoaderRoute: typeof AdminBlogsIndexImport
+      parentRoute: typeof AdminRouteImport
+    }
+    '/admin/contacts/': {
+      id: '/admin/contacts/'
+      path: '/contacts'
+      fullPath: '/admin/contacts'
+      preLoaderRoute: typeof AdminContactsIndexImport
       parentRoute: typeof AdminRouteImport
     }
     '/admin/emails/': {
@@ -701,6 +730,7 @@ interface AdminRouteRouteChildren {
   AdminUsersUserIdRoute: typeof AdminUsersUserIdRoute
   AdminUsersCreateRoute: typeof AdminUsersCreateRoute
   AdminBlogsIndexRoute: typeof AdminBlogsIndexRoute
+  AdminContactsIndexRoute: typeof AdminContactsIndexRoute
   AdminEmailsIndexRoute: typeof AdminEmailsIndexRoute
   AdminOrdersIndexRoute: typeof AdminOrdersIndexRoute
   AdminProductsIndexRoute: typeof AdminProductsIndexRoute
@@ -727,6 +757,7 @@ const AdminRouteRouteChildren: AdminRouteRouteChildren = {
   AdminUsersUserIdRoute: AdminUsersUserIdRoute,
   AdminUsersCreateRoute: AdminUsersCreateRoute,
   AdminBlogsIndexRoute: AdminBlogsIndexRoute,
+  AdminContactsIndexRoute: AdminContactsIndexRoute,
   AdminEmailsIndexRoute: AdminEmailsIndexRoute,
   AdminOrdersIndexRoute: AdminOrdersIndexRoute,
   AdminProductsIndexRoute: AdminProductsIndexRoute,
@@ -741,11 +772,13 @@ const AdminRouteRouteWithChildren = AdminRouteRoute._addFileChildren(
 interface BlogsRouteRouteChildren {
   BlogsBlogSlugRoute: typeof BlogsBlogSlugRoute
   BlogsIndexRoute: typeof BlogsIndexRoute
+  BlogsCollectionCollectionSlugRoute: typeof BlogsCollectionCollectionSlugRoute
 }
 
 const BlogsRouteRouteChildren: BlogsRouteRouteChildren = {
   BlogsBlogSlugRoute: BlogsBlogSlugRoute,
   BlogsIndexRoute: BlogsIndexRoute,
+  BlogsCollectionCollectionSlugRoute: BlogsCollectionCollectionSlugRoute,
 }
 
 const BlogsRouteRouteWithChildren = BlogsRouteRoute._addFileChildren(
@@ -808,7 +841,9 @@ export interface FileRoutesByFullPath {
   '/admin/reviews/import': typeof AdminReviewsImportRoute
   '/admin/users/$userId': typeof AdminUsersUserIdRoute
   '/admin/users/create': typeof AdminUsersCreateRoute
+  '/blogs/collection/$collectionSlug': typeof BlogsCollectionCollectionSlugRoute
   '/admin/blogs': typeof AdminBlogsIndexRoute
+  '/admin/contacts': typeof AdminContactsIndexRoute
   '/admin/emails': typeof AdminEmailsIndexRoute
   '/admin/orders': typeof AdminOrdersIndexRoute
   '/admin/products': typeof AdminProductsIndexRoute
@@ -856,7 +891,9 @@ export interface FileRoutesByTo {
   '/admin/reviews/import': typeof AdminReviewsImportRoute
   '/admin/users/$userId': typeof AdminUsersUserIdRoute
   '/admin/users/create': typeof AdminUsersCreateRoute
+  '/blogs/collection/$collectionSlug': typeof BlogsCollectionCollectionSlugRoute
   '/admin/blogs': typeof AdminBlogsIndexRoute
+  '/admin/contacts': typeof AdminContactsIndexRoute
   '/admin/emails': typeof AdminEmailsIndexRoute
   '/admin/orders': typeof AdminOrdersIndexRoute
   '/admin/products': typeof AdminProductsIndexRoute
@@ -907,7 +944,9 @@ export interface FileRoutesById {
   '/admin/reviews/import': typeof AdminReviewsImportRoute
   '/admin/users/$userId': typeof AdminUsersUserIdRoute
   '/admin/users/create': typeof AdminUsersCreateRoute
+  '/blogs/collection/$collectionSlug': typeof BlogsCollectionCollectionSlugRoute
   '/admin/blogs/': typeof AdminBlogsIndexRoute
+  '/admin/contacts/': typeof AdminContactsIndexRoute
   '/admin/emails/': typeof AdminEmailsIndexRoute
   '/admin/orders/': typeof AdminOrdersIndexRoute
   '/admin/products/': typeof AdminProductsIndexRoute
@@ -959,7 +998,9 @@ export interface FileRouteTypes {
     | '/admin/reviews/import'
     | '/admin/users/$userId'
     | '/admin/users/create'
+    | '/blogs/collection/$collectionSlug'
     | '/admin/blogs'
+    | '/admin/contacts'
     | '/admin/emails'
     | '/admin/orders'
     | '/admin/products'
@@ -1006,7 +1047,9 @@ export interface FileRouteTypes {
     | '/admin/reviews/import'
     | '/admin/users/$userId'
     | '/admin/users/create'
+    | '/blogs/collection/$collectionSlug'
     | '/admin/blogs'
+    | '/admin/contacts'
     | '/admin/emails'
     | '/admin/orders'
     | '/admin/products'
@@ -1055,7 +1098,9 @@ export interface FileRouteTypes {
     | '/admin/reviews/import'
     | '/admin/users/$userId'
     | '/admin/users/create'
+    | '/blogs/collection/$collectionSlug'
     | '/admin/blogs/'
+    | '/admin/contacts/'
     | '/admin/emails/'
     | '/admin/orders/'
     | '/admin/products/'
@@ -1166,6 +1211,7 @@ export const routeTree = rootRoute
         "/admin/users/$userId",
         "/admin/users/create",
         "/admin/blogs/",
+        "/admin/contacts/",
         "/admin/emails/",
         "/admin/orders/",
         "/admin/products/",
@@ -1177,7 +1223,8 @@ export const routeTree = rootRoute
       "filePath": "blogs/route.tsx",
       "children": [
         "/blogs/$blogSlug",
-        "/blogs/"
+        "/blogs/",
+        "/blogs/collection/$collectionSlug"
       ]
     },
     "/products": {
@@ -1319,8 +1366,16 @@ export const routeTree = rootRoute
       "filePath": "admin/users/create.tsx",
       "parent": "/admin"
     },
+    "/blogs/collection/$collectionSlug": {
+      "filePath": "blogs/collection/$collectionSlug.tsx",
+      "parent": "/blogs"
+    },
     "/admin/blogs/": {
       "filePath": "admin/blogs/index.tsx",
+      "parent": "/admin"
+    },
+    "/admin/contacts/": {
+      "filePath": "admin/contacts/index.tsx",
       "parent": "/admin"
     },
     "/admin/emails/": {

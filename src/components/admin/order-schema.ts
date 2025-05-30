@@ -6,6 +6,7 @@ export const OrderStatusEnum = z.enum([
   "COMPLETE",
   "REFUNDED",
   "CANCELLED",
+  "PAID",
 ]);
 export const PaymentMethodEnum = z.enum([
   "paypal",

@@ -10,11 +10,7 @@ enum SIZE_ENUM {
   LARGE = 400,
   EXTRA_LARGE = 800,
 }
-export const convertIDToURL = (id: string, size: SIZE_ENUM = 400) => {
-  if (!id) return "";
 
-  return `${API_URL}/files/${id}-${size}.avif`;
-};
 export const convertIDToStaticURL = (id: string, size: SIZE_ENUM = 400) => {
   if (!id) return "";
   const folder = id.slice(0, 7);
@@ -49,4 +45,13 @@ export function formatCurrency(amount: number): string {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
   }).format(amount);
+}
+
+export function formatDate(dateString: string): string {
+  const options: Intl.DateTimeFormatOptions = {
+    month: "short",
+    day: "2-digit",
+    year: "numeric",
+  };
+  return new Date(dateString).toLocaleDateString("en-US", options);
 }

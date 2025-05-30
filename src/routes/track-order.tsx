@@ -1,9 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+
 import { useState } from "react";
 import MainLayout from "@/layout/main-layout";
 import { z } from "zod";
+import { Input } from "@/components/ui/custom-ui";
 
 // Định nghĩa schema validate bằng Zod
 const formSchema = z.object({
@@ -97,6 +98,7 @@ function TrackOrder() {
         <form onSubmit={handleSubmit} className="grid grid-cols-1 gap-4">
           <div>
             <Input
+              aria-invalid={!!errors.trackingNumber}
               placeholder="Tracking Number"
               name="trackingNumber"
               value={formData.trackingNumber}
@@ -110,6 +112,7 @@ function TrackOrder() {
           </div>
           <div>
             <Input
+              aria-invalid={!!errors.email}
               placeholder="Email"
               name="email"
               type="email"

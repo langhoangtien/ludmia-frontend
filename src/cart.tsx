@@ -9,14 +9,11 @@ import React, {
 } from "react";
 import { VISIT_TRACKER_KEY } from "./hooks/use-visitor-tracker";
 import { API_URL } from "./config";
+import { CartAction, CartContextType, CartItem } from "./types/cart.type";
 export const ADD_TO_CART_TRACKER_KEY = "add-to-cart-tracked";
 const addToCartTracking = async () => {
-  console.log("addToCartTracking called");
-
   try {
     const addToCartTrack = sessionStorage.getItem(ADD_TO_CART_TRACKER_KEY);
-    console.log(ADD_TO_CART_TRACKER_KEY, addToCartTrack);
-
     if (!addToCartTrack) {
       const data = sessionStorage.getItem(VISIT_TRACKER_KEY);
       if (!data) return;
@@ -35,35 +32,10 @@ const addToCartTracking = async () => {
     console.log("Error tracking add to cart:", error);
   }
 };
-export interface CartItem {
-  id: string;
-  name: string;
-  price: number;
-  image: string;
-  quantity: number;
-  title?: string;
-}
-
-type CartAction =
-  | { type: "ADD_ITEM"; item: Omit<CartItem, "quantity"> }
-  | { type: "REMOVE_ITEM"; id: string }
-  | { type: "UPDATE_QUANTITY"; id: string; quantity: number }
-  | { type: "CLEAR_CART" };
-
-interface CartContextType {
-  items: CartItem[];
-  addItem: (item: Omit<CartItem, "quantity">) => void;
-  removeItem: (id: string) => void;
-  updateQuantity: (id: string, quantity: number) => void;
-  clearCart: () => void;
-  getCartTotal: () => number;
-  getCartCount: () => number;
-  isOpen: boolean;
-  setIsOpen: (isOpen: boolean) => void;
-}
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const useCart = () => {
   const context = useContext(CartContext);
   if (!context) {

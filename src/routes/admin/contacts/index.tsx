@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
@@ -10,7 +11,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Edit, PlusIcon, TrashIcon } from "lucide-react";
+import { PlusIcon, TrashIcon } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useDebounce } from "@/hooks/use-debounce";
 import { API_URL } from "@/config";
@@ -18,37 +19,26 @@ import { STORAGE_KEY } from "@/auth";
 import { LoadingTable } from "@/components/loading/table-loading";
 import Breadcrumbs from "@/components/ui/breadcrumbs";
 
-export const Route = createFileRoute("/admin/blogs/")({
+export const Route = createFileRoute("/admin/contacts/")({
   component: RouteComponent,
 });
 
 function RouteComponent() {
-  return <BlogPage />;
+  return <ContactPage />;
 }
 
-export interface IBlog {
+export interface IContact {
   _id: string;
-  title: string;
-  content: string;
-  description?: string;
-  image?: string;
-  user?: {
-    _id: string;
-    fullName: string;
-    email: string;
-    image: string;
-  };
-  slug: string;
-  collections: {
-    title: string;
-    value: string;
-  }[];
+  email: string;
+  name?: string;
+  issueType?: string;
+  message?: string;
   createdAt: string;
 }
 
-function BlogPage() {
-  const [blogs, setBlogs] = useState<IBlog[]>([]);
-  const [selectedBlogs, setSelectedBlogs] = useState<string[]>([]);
+function ContactPage() {
+  const [contacts, setContact] = useState<IContact[]>([]);
+  const [selectedContacts, setSelectedcontacts] = useState<string[]>([]);
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
@@ -57,10 +47,10 @@ function BlogPage() {
   const debouncedSearch = useDebounce(search);
 
   useEffect(() => {
-    fetchBlogs();
+    fetchContacts();
   }, [debouncedSearch, page]);
 
-  const fetchBlogs = async () => {
+  const fetchContacts = async () => {
     setLoading(true);
     setError(null);
 
@@ -69,16 +59,16 @@ function BlogPage() {
       if (!token) throw new Error("Unauthorized: No token found");
 
       const res = await fetch(
-        `${API_URL}/blogs?page=${page}&limit=10&search=${debouncedSearch}`,
+        `${API_URL}/contacts?page=${page}&limit=10&search=${debouncedSearch}`,
         {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
 
-      if (!res.ok) throw new Error("Failed to fetch blogs");
+      if (!res.ok) throw new Error("Failed to fetch contacts");
 
       const data = await res.json();
-      setBlogs(data.data);
+      setContact(data.data);
       setTotalPages(data.pagination.totalPages);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Unknown error");
@@ -92,28 +82,28 @@ function BlogPage() {
       const token = localStorage.getItem(STORAGE_KEY);
       if (!token) throw new Error("Unauthorized: No token found");
 
-      const res = await fetch(`${API_URL}/blogs/delete-many`, {
+      const res = await fetch(`${API_URL}/contacts/delete-many`, {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ ids: selectedBlogs }),
+        body: JSON.stringify({ ids: selectedContacts }),
       });
 
-      if (!res.ok) throw new Error("Failed to delete blogs");
+      if (!res.ok) throw new Error("Failed to delete contacts");
 
-      setSelectedBlogs([]);
+      setSelectedcontacts([]);
       setPage(1);
-      fetchBlogs();
+      fetchContacts();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Unknown error");
     }
   };
 
   const allSelected = useMemo(
-    () => selectedBlogs.length === blogs.length && blogs.length > 0,
-    [selectedBlogs, blogs]
+    () => selectedContacts.length === contacts.length && contacts.length > 0,
+    [selectedContacts, contacts]
   );
 
   return (
@@ -135,14 +125,14 @@ function BlogPage() {
           />
           <span className="flex space-x-2">
             <Button
-              variant={selectedBlogs.length ? "destructive" : "outline"}
+              variant={selectedContacts.length ? "destructive" : "outline"}
               size="icon"
               onClick={handleDelete}
-              disabled={!selectedBlogs.length}
+              disabled={!selectedContacts.length}
             >
               <TrashIcon strokeWidth={1.25} />
             </Button>
-            <Link to="/admin/blogs/create">
+            <Link to="/admin/contacts/create">
               <Button size="icon">
                 <PlusIcon />
               </Button>
@@ -158,38 +148,41 @@ function BlogPage() {
                 <Checkbox
                   checked={allSelected}
                   onCheckedChange={(checked) =>
-                    setSelectedBlogs(checked ? blogs.map((b) => b._id) : [])
+                    setSelectedcontacts(
+                      checked ? contacts.map((b) => b._id) : []
+                    )
                   }
                 />
               </TableHead>
-              <TableHead className="max-w-sm">Tiêu đề</TableHead>
-              <TableHead>Slug</TableHead>
-              <TableHead>Tác giả</TableHead>
-              <TableHead>Ngày tạo</TableHead>
+              <TableHead className="max-w-sm">Email</TableHead>
+              <TableHead>Tên</TableHead>
+              <TableHead>Lý do</TableHead>
+              <TableHead>Nội dung</TableHead>
               <TableHead>Hành động</TableHead>
             </TableRow>
           </TableHeader>
 
           <TableBody>
-            {blogs.map((blog) => (
-              <TableRow key={blog._id}>
+            {contacts.map((contact) => (
+              <TableRow key={contact._id}>
                 <TableCell>
                   <Checkbox
-                    checked={selectedBlogs.includes(blog._id)}
+                    checked={selectedContacts.includes(contact._id)}
                     onCheckedChange={(checked) =>
-                      setSelectedBlogs((prev) =>
+                      setSelectedcontacts((prev) =>
                         checked
-                          ? [...prev, blog._id]
-                          : prev.filter((id) => id !== blog._id)
+                          ? [...prev, contact._id]
+                          : prev.filter((id) => id !== contact._id)
                       )
                     }
                   />
                 </TableCell>
-                <TableCell>{blog.title}</TableCell>
-                <TableCell>{blog.slug}</TableCell>
-                <TableCell>{blog.user?.fullName}</TableCell>
+                <TableCell>{contact.email}</TableCell>
+                <TableCell>{contact.name}</TableCell>
+                <TableCell>{contact.issueType}</TableCell>
+                <TableCell>{contact.message}</TableCell>
                 <TableCell>
-                  {new Date(blog.createdAt).toLocaleString("vi-VN", {
+                  {new Date(contact.createdAt).toLocaleString("vi-VN", {
                     year: "numeric",
                     month: "2-digit",
                     day: "2-digit",
@@ -197,13 +190,6 @@ function BlogPage() {
                     minute: "2-digit",
                     second: "2-digit",
                   })}
-                </TableCell>
-                <TableCell>
-                  <Link to="/admin/blogs/$blogId" params={{ blogId: blog._id }}>
-                    <Button variant="outline" size="icon">
-                      <Edit strokeWidth={1} className="cursor-pointer" />
-                    </Button>
-                  </Link>
                 </TableCell>
               </TableRow>
             ))}

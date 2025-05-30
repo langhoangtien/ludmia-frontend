@@ -26,14 +26,14 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import { useAuth } from "@/auth";
-import { convertIDToURL } from "@/lib/utils";
+import { convertIDToStaticURL } from "@/lib/utils";
 import { Link } from "@tanstack/react-router";
 
 export function NavUser() {
   const { isMobile } = useSidebar();
   const auth = useAuth();
   const user = auth.user;
-  const avatar = convertIDToURL(user?.image || "");
+  const avatar = convertIDToStaticURL(user?.image || "");
   return (
     <SidebarMenu>
       <SidebarMenuItem>

@@ -139,8 +139,6 @@ export function CheckoutPage() {
     },
   });
   const validateForm = () => {
-    console.log("validateForm", formData);
-
     const result = isSameShipping
       ? checkoutSchema.safeParse(formData)
       : checkoutFullSchema.safeParse(formData);
@@ -316,8 +314,6 @@ export function CheckoutPage() {
   };
 
   const createOrder = async () => {
-    console.log("createOrder");
-
     const shippingPayment = {
       ...formData.shippingAddress,
       fullName: `${formData.shippingAddress.firstName} ${formData.shippingAddress.lastName}`,

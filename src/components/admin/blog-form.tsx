@@ -20,7 +20,14 @@ const blogSchema = z.object({
   description: z.string().max(500).optional(),
   image: z.string().max(255, "URL ảnh quá dài").optional(),
   slug: z.string().max(255),
-  collections: z.array(z.string()).optional(),
+  collections: z
+    .array(
+      z.object({
+        title: z.string().min(1).max(100),
+        value: z.string().min(1).max(100),
+      })
+    )
+    .optional(),
 });
 
 export default function BlogForm({ id }: { id?: string }) {
@@ -30,7 +37,10 @@ export default function BlogForm({ id }: { id?: string }) {
     description: string;
     image: string;
     slug: string;
-    collections: string[];
+    collections: {
+      title: string;
+      value: string;
+    }[];
   }>({
     title: "",
     content: "",
@@ -69,14 +79,18 @@ export default function BlogForm({ id }: { id?: string }) {
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter" && value.trim() !== "") {
-      if (!formData.collections.includes(value))
+      if (!formData.collections.find((item) => item.title === value)) {
         setFormData((prev) => ({
           ...prev,
-          collections: [...prev.collections, value],
+          collections: [
+            ...prev.collections,
+            { title: value, value: toSlug(value) },
+          ],
         }));
 
-      setValue("");
-      e.preventDefault();
+        setValue("");
+        e.preventDefault();
+      }
     } else if (e.key === "Backspace" && value === "") {
       setFormData((prev) => ({
         ...prev,
@@ -84,7 +98,6 @@ export default function BlogForm({ id }: { id?: string }) {
       }));
     }
   };
-
   const handleGetContent = () => {
     if (editorRef.current) {
       const content = editorRef.current.getContent();
@@ -201,12 +214,12 @@ export default function BlogForm({ id }: { id?: string }) {
           <div className="col-span-2">
             <label className="block text-sm font-medium mt-1">Tags</label>
             <div className="flex flex-grow flex-wrap gap-2 min-h-10 border bg-background border-border p-2 rounded-md">
-              {formData.collections.map((value, index) => (
+              {formData.collections.map((collection, index) => (
                 <button
                   key={index}
                   className="bg-gray-200 text-sm px-2 py-0.5 mr-2 rounded inline-flex items-center justify-center"
                 >
-                  {value}
+                  {collection.title}
                   <X
                     strokeWidth={1}
                     size={16}

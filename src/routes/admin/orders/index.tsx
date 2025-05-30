@@ -25,7 +25,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import OrderDetails from "@/pages/admin/order/order-detail";
-import { IOrder } from "@/components/admin/order-form";
+import { IOrder } from "@/types/order.type";
 
 export const Route = createFileRoute("/admin/orders/")({
   component: RouteComponent,
@@ -49,6 +49,7 @@ export default function OrderPage() {
 
   useEffect(() => {
     fetchOrders();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [debouncedSearch, page]);
 
   const fetchOrders = async () => {

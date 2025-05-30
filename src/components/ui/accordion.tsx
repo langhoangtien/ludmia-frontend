@@ -1,7 +1,6 @@
 import * as React from "react";
 import * as AccordionPrimitive from "@radix-ui/react-accordion";
 import { ChevronDownIcon, MinusIcon, PlusIcon } from "lucide-react";
-import "./accordion.css";
 
 import { cn } from "@/lib/utils";
 

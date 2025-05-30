@@ -12,11 +12,20 @@ import { API_URL } from "@/config";
 import MainLayout from "@/layout/main-layout";
 import { formatCurrency } from "@/lib/utils";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { ChevronDown, SearchIcon, TagIcon, XIcon } from "lucide-react";
+import {
+  ChevronDown,
+  ChevronsDown,
+  RotateCw,
+  SearchIcon,
+  TagIcon,
+  XIcon,
+} from "lucide-react";
 import { useEffect, useState } from "react";
 
 import { z } from "zod";
-import { IProduct } from "./admin/products";
+
+import ProductSkeleton from "@/components/product-skeleton";
+import { IProduct } from "@/types/product.type";
 
 const searchSchema = z.object({
   q: z.string().optional().default(""),
@@ -24,7 +33,6 @@ const searchSchema = z.object({
 
 export const Route = createFileRoute("/search")({
   validateSearch: searchSchema,
-
   component: RouteComponent,
 });
 
@@ -49,15 +57,23 @@ const SearchPage = () => {
   const [products, setProducts] = useState<IProduct[]>([]); // <-- Chứa danh sách sản phẩm
   const [loading, setLoading] = useState(false);
 
+  const [pagination, setPagination] = useState({
+    total: 0,
+    totalPages: 0,
+    page: 1,
+  });
+
   // Gọi API fetch product
-  const fetchProducts = async () => {
+  const fetchProducts = async (page = 1, reset = true) => {
     try {
       setLoading(true);
+
       const response = await fetch(
-        `${API_URL}/products?search=${encodeURIComponent(query)}&sortBy=${encodeURIComponent(sortBy.value)}&sortOrder=${encodeURIComponent(sortBy.order)}`
+        `${API_URL}/products?limit=8&page=${page}&search=${encodeURIComponent(query)}&sortBy=${encodeURIComponent(sortBy.value)}&sortOrder=${encodeURIComponent(sortBy.order)}`
       );
       const data = await response.json();
-      setProducts(data.data);
+      setProducts((pre) => (reset ? data.data : [...pre, ...data.data]));
+      setPagination(data.pagination);
     } catch (error) {
       console.error("Failed to fetch products:", error);
     } finally {
@@ -73,7 +89,10 @@ const SearchPage = () => {
 
   // Gọi lại API khi sortBy thay đổi
   useEffect(() => {
+    setProducts([]);
     fetchProducts();
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sortBy, q]);
 
   return (
@@ -141,11 +160,12 @@ const SearchPage = () => {
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
-          <span>{loading ? "Loading..." : `${products.length} result(s)`}</span>
+          <span>
+            {loading ? "Loading..." : `${pagination.total} result(s)`}
+          </span>
         </div>
 
         <div className="grid grid-cols-2  md:grid-cols-3 lg:grid-cols-4 gap-4 lg:gap-8">
-          {/* Hiển thị danh sách sản phẩm */}
           {products.map((product: IProduct) => (
             <ProductCard
               key={product._id}
@@ -157,6 +177,27 @@ const SearchPage = () => {
               }}
             />
           ))}
+          {loading &&
+            Array.from({ length: 4 }).map((_, index) => (
+              <ProductSkeleton key={index} />
+            ))}
+        </div>
+        <div className="text-center flex justify-center mt-4 w-full">
+          {pagination.page < pagination.totalPages && (
+            <Button
+              onClick={() => fetchProducts(pagination.page + 1, false)}
+              disabled={loading}
+              className="flex items-center gap-2"
+              variant="default"
+            >
+              {loading ? (
+                <RotateCw className="mr-1 animate-spin" />
+              ) : (
+                <ChevronsDown />
+              )}
+              {loading ? "Loading..." : "See more"}
+            </Button>
+          )}
         </div>
       </div>
     </MainLayout>
@@ -184,7 +225,7 @@ const ProductCard = ({
   );
   return (
     <div
-      className="border overflow-hidden shadow-2xl space-y-4 rounded-md mb-2"
+      className="border overflow-hidden shadow-md space-y-4 rounded-md mb-2"
       onClick={onClick}
     >
       <Image

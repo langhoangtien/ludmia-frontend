@@ -7,8 +7,10 @@ import { Button } from "@/components/ui/button";
 import MainLayout from "@/layout/main-layout";
 import { Input, Select } from "@/components/ui/custom-ui";
 import { CheckCheck } from "lucide-react";
-import { CONTACT_ADDRESS, CONTACT_EMAIL } from "@/config";
+import { API_URL, CONTACT_ADDRESS, CONTACT_EMAIL } from "@/config";
+import { toast } from "sonner";
 
+import { z } from "zod";
 export const Route = createFileRoute("/contact-us")({
   component: RouteComponent,
 });
@@ -40,6 +42,14 @@ const issueOptions = [
   "Other reasons",
 ];
 
+// eslint-disable-next-line react-refresh/only-export-components
+export const contactSchema = z.object({
+  name: z.string().min(1, "Name is required").max(200).optional(),
+  email: z.string().email().max(100),
+  message: z.string().max(1000).optional(),
+  phone: z.string().max(20).optional(),
+  issueType: z.string().min(1).max(200).optional(),
+});
 function ContactForm() {
   const [formData, setFormData] = useState<FormData>({
     name: "",
@@ -49,30 +59,26 @@ function ContactForm() {
     issueType: "",
     attachments: [],
   });
-  const [errors, setErrors] = useState<
-    Partial<FormData & { attachmentsError?: string }>
-  >({});
+  // const [errors, setErrors] = useState<
+  //   Partial<FormData & { attachmentsError?: string }>
+  // >({});
+  const [errors, setErrors] = useState<Record<string, string>>({});
   const [submitted, setSubmitted] = useState(false);
+  const validateForm = () => {
+    const result = contactSchema.safeParse(formData);
+    if (!result.success) {
+      const errorMap: Record<string, string> = {};
+      result.error.errors.forEach((err) => {
+        errorMap[err.path.join(".")] = err.message;
+      });
+      setErrors(errorMap);
+      console.log(errorMap);
 
-  const validate = (): boolean => {
-    const newErrors: Partial<FormData & { attachmentsError?: string }> = {};
-
-    if (!formData.name) newErrors.name = "Name is required";
-    if (!formData.email) newErrors.email = "Email is required";
-    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email))
-      newErrors.email = "Invalid email format";
-    if (formData.phone && !/^\d{7,15}$/.test(formData.phone))
-      newErrors.phone = "Phone number must be 7-15 digits";
-    if (!formData.message) newErrors.message = "Message is required";
-    if (formData.attachments.length > 10)
-      newErrors.attachmentsError = "Maximum 10 files allowed";
-    if (formData.attachments.some((file) => file.size > 3 * 1024 * 1024))
-      newErrors.attachmentsError = "Each file must be under 3MB";
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
+      return false;
+    }
+    setErrors({});
+    return true;
   };
-
   const handleChange = (
     e: React.ChangeEvent<
       HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
@@ -80,23 +86,7 @@ function ContactForm() {
   ) => {
     const { name, value } = e.target;
 
-    // Clear error when input is valid
-    const newErrors = { ...errors };
-    if (name === "email" && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
-      delete newErrors.email;
-    }
-    if (name === "phone" && /^\d{7,15}$/.test(value)) {
-      delete newErrors.phone;
-    }
-    if (name === "name" && value.trim()) {
-      delete newErrors.name;
-    }
-    if (name === "message" && value.trim()) {
-      delete newErrors.message;
-    }
-
     setFormData({ ...formData, [name]: value });
-    setErrors(newErrors);
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -118,18 +108,36 @@ function ContactForm() {
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (validate()) {
+    if (validateForm()) {
+      const form = {
+        name: formData.name,
+        email: formData.email,
+        phone: formData.phone,
+        message: formData.message,
+        issueType: formData.issueType,
+      };
+      const res = await fetch(`${API_URL}/client/contact`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(form),
+      });
+      if (!res.ok) {
+        toast.error("Failed to send message");
+        return;
+      }
+      toast.success("Message sent successfully");
       setSubmitted(true);
     }
   };
-
   return (
     <div className="max-w-3xl mx-auto mt-10 p-4 flex flex-col gap-8">
       <h2 className="text-2xl font-semibold ">Contact Us</h2>
       {submitted ? (
-        <p className="text-primary flex items-center space-x-0.5">
+        <p className="text-green-500 flex items-center space-x-0.5">
           <CheckCheck className="size-5" />{" "}
           <span>Your message has been sent</span>
           successfully!
@@ -141,9 +149,9 @@ function ContactForm() {
               type="text"
               name="name"
               placeholder="Your Name"
+              aria-invalid={!!errors.name}
               value={formData.name}
               onChange={handleChange}
-              required
             />
             {errors.name && (
               <p className="text-destructive text-sm">{errors.name}</p>
@@ -153,10 +161,10 @@ function ContactForm() {
             <Input
               type="email"
               name="email"
+              aria-invalid={!!errors.email}
               placeholder="Your Email"
               value={formData.email}
               onChange={handleChange}
-              required
             />
             {errors.email && (
               <p className="text-destructive text-sm">{errors.email}</p>
@@ -166,6 +174,7 @@ function ContactForm() {
             <Input
               type="text"
               name="phone"
+              aria-invalid={!!errors.phone}
               placeholder="Phone (optional)"
               value={formData.phone}
               onChange={handleChange}
@@ -179,6 +188,7 @@ function ContactForm() {
               name="issueType"
               label="Reason for Contact"
               id="issueType"
+              aria-invalid={!!errors.issueType}
               value={formData.issueType}
               onChange={handleChange}
             >
@@ -194,9 +204,9 @@ function ContactForm() {
               className="col-span-2 md:text-base"
               name="message"
               placeholder="Your Message"
+              aria-invalid={!!errors.message}
               value={formData.message}
               onChange={handleChange}
-              required
             />
             {errors.message && (
               <p className="text-destructive text-sm">{errors.message}</p>

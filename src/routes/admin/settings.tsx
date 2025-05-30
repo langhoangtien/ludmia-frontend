@@ -21,11 +21,11 @@ function RouteComponent() {
   return <SettingsForm />;
 }
 
-export const settingsSchema = z.object({
+const settingsSchema = z.object({
   companyName: z.string().optional(),
   companyAddress: z.string().optional(),
   companyPhone: z.string().optional(),
-  companWebsite: z.string().url().optional(),
+  companyWebsite: z.string().url().optional(),
   mailService: z.enum(["Gmail", "Zoho", "SendGrid"]).optional(),
   smtpUser: z.string().optional(),
   smtpPass: z.string().optional(),
@@ -33,6 +33,16 @@ export const settingsSchema = z.object({
   paypalSecret: z.string().optional(),
   paypalMode: z.enum(["Sandbox", "Production"]).optional(),
   facebookPixelId: z.string().optional(),
+  tokens: z
+    .array(
+      z.object({
+        domain: z.string().min(1, "Domain is required"),
+        accessToken: z.string().min(1, "Access token is required"),
+        version: z.string().optional().default("2025-01"),
+      })
+    )
+    .optional()
+    .default([]),
 });
 
 type SettingsInput = z.infer<typeof settingsSchema>;
@@ -42,7 +52,7 @@ function SettingsForm() {
     companyName: "",
     companyAddress: "",
     companyPhone: "",
-    companWebsite: "",
+    companyWebsite: "",
     mailService: "Zoho",
     smtpUser: "",
     smtpPass: "",
@@ -50,10 +60,9 @@ function SettingsForm() {
     paypalSecret: "",
     paypalMode: "Sandbox",
     facebookPixelId: "",
+    tokens: [],
   });
-  const [errors, setErrors] = useState<
-    Partial<Record<keyof SettingsInput, string>>
-  >({});
+  const [errors, setErrors] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(false);
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -66,7 +75,8 @@ function SettingsForm() {
     if (!result.success) {
       const errorMap: Record<string, string> = {};
       result.error.errors.forEach((err) => {
-        errorMap[err.path.join(".")] = err.message;
+        const path = err.path.join(".");
+        errorMap[path] = err.message;
       });
       setErrors(errorMap);
       console.log(errorMap);
@@ -206,14 +216,14 @@ function SettingsForm() {
               </label>
               <Input
                 placeholder="Website URL"
-                name="companWebsite"
-                value={formData.companWebsite}
-                aria-invalid={!!errors.companWebsite}
+                name="companyWebsite"
+                value={formData.companyWebsite}
+                aria-invalid={!!errors.companyWebsite}
                 onChange={handleChange}
               />
-              {errors.companWebsite && (
+              {errors.companyWebsite && (
                 <p className="text-destructive text-sm">
-                  {errors.companWebsite}
+                  {errors.companyWebsite}
                 </p>
               )}
             </div>
@@ -228,11 +238,89 @@ function SettingsForm() {
                 aria-invalid={!!errors.facebookPixelId}
                 onChange={handleChange}
               />
-              {errors.companWebsite && (
+              {errors.companyWebsite && (
                 <p className="text-destructive text-sm">
                   {errors.facebookPixelId}
                 </p>
               )}
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-accent-foreground mb-1">
+                Token
+              </label>
+              <div>
+                {formData.tokens.map((token, index) => (
+                  <div key={index} className="flex items-center space-x-2 mb-2">
+                    <Input
+                      aria-invalid={!!errors[`tokens.${index}.domain`]}
+                      placeholder="Domain"
+                      value={token.domain}
+                      onChange={(e) =>
+                        setFormData((prev) => {
+                          const newTokens = [...prev.tokens];
+                          newTokens[index].domain = e.target.value;
+                          return { ...prev, tokens: newTokens };
+                        })
+                      }
+                    />
+                    <Input
+                      aria-invalid={!!errors[`tokens.${index}.version`]}
+                      placeholder="Version"
+                      value={token.version}
+                      onChange={(e) =>
+                        setFormData((prev) => {
+                          const newTokens = [...prev.tokens];
+                          newTokens[index].version = e.target.value;
+                          return { ...prev, tokens: newTokens };
+                        })
+                      }
+                    />
+                    <Input
+                      aria-invalid={!!errors[`tokens.${index}.accessToken`]}
+                      placeholder="Access Token"
+                      value={token.accessToken}
+                      onChange={(e) =>
+                        setFormData((prev) => {
+                          const newTokens = [...prev.tokens];
+                          newTokens[index].accessToken = e.target.value;
+                          return { ...prev, tokens: newTokens };
+                        })
+                      }
+                    />
+                    <Button
+                      variant="destructive"
+                      onClick={() =>
+                        setFormData((prev) => {
+                          const newTokens = prev.tokens.filter(
+                            (_, i) => i !== index
+                          );
+                          return { ...prev, tokens: newTokens };
+                        })
+                      }
+                    >
+                      Xóa
+                    </Button>
+                  </div>
+                ))}
+              </div>
+              <div className="flex justify-end">
+                {" "}
+                <Button
+                  variant="outline"
+                  size={"sm"}
+                  onClick={() =>
+                    setFormData((prev) => ({
+                      ...prev,
+                      tokens: [
+                        ...prev.tokens,
+                        { domain: "", accessToken: "", version: "2025-01" },
+                      ],
+                    }))
+                  }
+                >
+                  Thêm Token
+                </Button>
+              </div>
             </div>
           </div>
           <div className="col-span-2 md:col-span-1 space-y-4">

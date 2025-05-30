@@ -9,7 +9,7 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { IOrder } from "@/components/admin/order-form";
+import { IOrder } from "@/types/order.type";
 
 interface OrderDetailsProps {
   order?: IOrder;
@@ -79,6 +79,7 @@ export default function OrderDetails({ order }: OrderDetailsProps) {
               <TableRow key={index}>
                 <TableCell>
                   <p className="line-clamp-1">{item.name}</p>
+                  <p className="text-gray-500 text-sm">{item.title}</p>
                 </TableCell>
                 <TableCell>${item.price}</TableCell>
                 <TableCell>{item.quantity}</TableCell>

@@ -49,6 +49,7 @@ export default function EditorTipTap({
 }: {
   isFull?: boolean;
   initialContent?: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   ref?: React.Ref<any>;
 }) {
   const editor = useEditor({

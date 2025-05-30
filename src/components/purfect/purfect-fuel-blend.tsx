@@ -11,12 +11,13 @@ import {
 } from "@/components/ui/accordion";
 
 import ListPaymentMethod from "../list-payment-method";
-import { IProduct, IVariant } from "@/routes/admin/products";
+
 import StarIcon from "../icons/star-icon";
 import ReviewList from "../reviews";
 import { Badge } from "../ui/badge";
 import { COMPANY_NAME } from "@/config";
 import { useState } from "react";
+import { IProduct, IVariant } from "@/types/product.type";
 interface IData extends IProduct {
   images: string[];
   variants: IVariant[];
@@ -56,7 +57,7 @@ export default function PufectPage() {
     from: "/products/purfect-fuel-blend",
   });
 
-  const [radioValue, setRadioValue] = useState<number>(0);
+  const [variant, setVariant] = useState<IVariant | null>(null);
 
   const slides = [...productData.images];
 
@@ -68,7 +69,6 @@ export default function PufectPage() {
     ...productData,
     variants: productData.variants.map((variant: IVariant, i: number) => ({
       ...variant,
-      title: variant.attributes.map((i) => i.value).join(", "),
       image: variant.image || productData.image || productData.images[0] || "",
       description: `${(i + 1) * 2} bottle`,
     })),
@@ -122,11 +122,11 @@ export default function PufectPage() {
           <div className="mt-4 rounded-lg">
             <p className=" flex space-x-3 items-center ">
               <span className="line-through text-xl  ">
-                ${product.variants[radioValue]?.compareAtPrice ?? ""}
+                ${variant?.compareAtPrice ?? ""}
               </span>{" "}
               <span className="font-normal text-4xl text-accent-foreground ">
                 {" "}
-                ${product.variants[radioValue]?.price}
+                ${variant?.price}
               </span>
               <Badge>Sale</Badge>
             </p>
@@ -143,8 +143,8 @@ export default function PufectPage() {
           <div className="mt-6">
             <AddToCartPurfectSection
               product={product}
-              radioValue={radioValue}
-              setRadioValue={setRadioValue}
+              variant={variant}
+              setVariant={setVariant}
             />
           </div>
 
@@ -177,7 +177,7 @@ export default function PufectPage() {
       </div>
       <div className="col-span-2">
         {" "}
-        <ReviewList />
+        <ReviewList slug={productData.slug} />
       </div>
     </div>
   );

@@ -116,12 +116,12 @@
   color: var(--primary);
   display: inline-block;
   position: relative;
-  width: 60px;
-  height: 60px;
+  width: 30px;
+  height: 30px;
 }
 
 .lds-spinner div {
-  transform-origin: 30px 30px; /* 40px / 2 */
+  transform-origin: 15px 15px; /* 40px / 2 */
   animation: lds-spinner 1.2s linear infinite;
 }
 
@@ -129,10 +129,10 @@
   content: " ";
   display: block;
   position: absolute;
-  top: 2.4px; /* chia đôi từ 3.2px */
-  left: 27.6px; /* chia đôi từ 36.8px */
-  width: 4.8px; /* chia đôi từ 6.4px */
-  height: 13.2px; /* chia đôi từ 17.6px */
+  top: 1.2px; /* chia đôi từ 3.2px */
+  left: 13.8px; /* chia đôi từ 36.8px */
+  width: 2.4px; /* chia đôi từ 6.4px */
+  height: 6.6px; /* chia đôi từ 17.6px */
   border-radius: 20%;
   background: #ccc;
 }
@@ -192,3 +192,33 @@
     opacity: 0;
   }
 }
+
+/* Accordion styles */
+.AccordionContent {
+  overflow: hidden;
+}
+.AccordionContent[data-state="open"] {
+  animation: slideDown 300ms ease-out;
+}
+.AccordionContent[data-state="closed"] {
+  animation: slideUp 300ms ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    height: 0;
+  }
+  to {
+    height: var(--radix-accordion-content-height);
+  }
+}
+
+@keyframes slideUp {
+  from {
+    height: var(--radix-accordion-content-height);
+  }
+  to {
+    height: 0;
+  }
+}
+/* Accordion styles */

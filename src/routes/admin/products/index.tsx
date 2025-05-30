@@ -20,6 +20,7 @@ import { API_URL } from "@/config";
 import { STORAGE_KEY } from "@/auth";
 import { LoadingTable } from "@/components/loading/table-loading";
 import Breadcrumbs from "@/components/ui/breadcrumbs";
+import { IProduct } from "@/types/product.type";
 
 export const Route = createFileRoute("/admin/products/")({
   component: RouteComponent,
@@ -27,31 +28,6 @@ export const Route = createFileRoute("/admin/products/")({
 
 function RouteComponent() {
   return <ProductPage />;
-}
-
-export interface IVariant {
-  title: string;
-  price: number;
-  compareAtPrice: number;
-  stock: number;
-  attributes: { name: string; value: string }[];
-  image: string;
-  sku?: string;
-  _id: string;
-}
-export interface IProduct {
-  _id: string;
-  name: string;
-  slug: string;
-  description: string;
-  introduction?: string;
-  minPrice?: number;
-  minCompareAtPrice?: number;
-  image: string;
-  images: string[];
-  variantOptions: { name: string; values: string[] }[];
-  createdAt?: string;
-  variants: IVariant[];
 }
 
 export default function ProductPage() {

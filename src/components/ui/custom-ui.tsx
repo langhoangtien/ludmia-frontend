@@ -9,7 +9,6 @@ const Select = React.forwardRef<
   return (
     <div className="relative">
       <select
-        required
         ref={ref}
         id={props.id}
         {...props}

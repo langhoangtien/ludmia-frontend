@@ -31,7 +31,7 @@ import { Textarea } from "./ui/textarea";
 import { toast } from "sonner";
 
 interface Review {
-  _id: number;
+  _id: string;
   productId: string;
   customer: string;
   title: string;
@@ -72,7 +72,7 @@ const reviewSchema = z.object({
     .max(1000, "Content is too long"),
 });
 
-const ReviewList: React.FC = () => {
+const ReviewList = ({ slug }: { slug: string }) => {
   const [reviews, setReviews] = useState<Review[]>([]);
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(false);
@@ -85,7 +85,6 @@ const ReviewList: React.FC = () => {
     rating: 5,
     title: "",
     body: "",
-    productId: "purfect-fuel-blend",
   });
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
@@ -116,7 +115,7 @@ const ReviewList: React.FC = () => {
     sortOrder: "desc",
   });
 
-  const [likedIds, setLikedIds] = useState<number[]>([]);
+  const [likedIds, setLikedIds] = useState<string[]>([]);
 
   useEffect(() => {
     const likedIds = JSON.parse(localStorage.getItem("likedIds") || "[]");
@@ -124,7 +123,7 @@ const ReviewList: React.FC = () => {
     setLikedIds(likedIds);
   }, []);
 
-  const handleLike = (id: number) => {
+  const handleLike = (id: string) => {
     setLikedIds((prevLikedIds) => {
       const newLikedIds = prevLikedIds.includes(id)
         ? prevLikedIds.filter((likedId) => likedId !== id)
@@ -137,6 +136,7 @@ const ReviewList: React.FC = () => {
 
   useEffect(() => {
     fetchReviews(1, true);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filters]);
 
   const fetchReviews = async (page: number, reset: boolean = false) => {
@@ -146,6 +146,7 @@ const ReviewList: React.FC = () => {
       const queryParams = new URLSearchParams({
         page: String(page),
         limit: "10",
+        productId: slug,
         sortBy: filters.sortBy,
         sortOrder: filters.sortOrder,
         ...(filters.rating && { rating: String(filters.rating) }),
@@ -180,25 +181,29 @@ const ReviewList: React.FC = () => {
 
   const handleSubmit = async () => {
     if (!validateForm()) return;
-    // Submit the form data to the server or perform any other action
+
+    const data = { ...formData, productId: slug };
     try {
       const response = await fetch(`${API_URL}/client/review`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(data),
       });
-      await response.json();
+      const responseData = await response.json();
       if (response.ok) {
         setOpen(false);
+        setReviews((pre) => [
+          ...pre,
+          { ...responseData, _id: `${responseData._id}_new` },
+        ]);
         setFormData({
           customer: "",
           email: "",
           rating: 5,
           title: "",
           body: "",
-          productId: "purfect-fuel-blend",
         });
         toast.success("Review submitted successfully!");
       }
@@ -371,7 +376,7 @@ const ReviewList: React.FC = () => {
       <div className="text-center flex justify-center mt-4 w-full">
         {page < pagination.totalPages && (
           <Button
-            onClick={() => fetchReviews(page + 1)}
+            onClick={() => fetchReviews(page + 1, false)}
             disabled={loading}
             className="flex items-center gap-2"
             variant="default"

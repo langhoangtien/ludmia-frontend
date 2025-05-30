@@ -1,5 +1,4 @@
 import { useEffect, useRef, useState } from "react";
-
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { orderSchema } from "./order-schema";
@@ -11,98 +10,23 @@ import { Loader2, MinusIcon, PlusIcon, Trash } from "lucide-react";
 import { toast } from "sonner";
 import { useNavigate } from "@tanstack/react-router";
 import Breadcrumbs from "../ui/breadcrumbs";
-
-interface Variant {
-  _id: string;
-  name: string;
-  price: number;
-  salePrice: number;
-  stock: number;
-  attributes: { name: string; value: string }[];
-  image: string;
-  productId: string;
-}
-
-export interface IOrder {
-  _id: string;
-  email: string;
-  name: string;
-  status: string;
-  paymentMethod: string;
-  paymentId?: string;
-  paymentSource?: PaymentSourceResponse;
-  total: number;
-  tax: number;
-  paymentGateway?: string;
-  shippingAddress: {
-    fullName: string;
-    address: string;
-    city: string;
-    postalCode: string;
-    country: string;
-    phone: string;
-  };
-  products: IVariantCart[];
-  logisticPartner?: string;
-  trackingNumber?: string;
-  createdAt: string;
-  updatedAt: string;
-}
-
-export interface IVariantCart {
-  productId: string;
-  variantId: string;
-  name: string;
-  quantity: number;
-  price: number;
-  attributes: { name: string; value: string }[];
-}
-export interface CardResponse {
-  name?: string;
-  last_digits?: string;
-  brand?: string;
-  available_networks?: string[];
-  type?: string;
-  expiry?: string;
-  bin_details?: {
-    bin?: string;
-    issuing_bank?: string;
-    bin_country_code?: string;
-  };
-}
-
-export interface PaypalWalletResponse {
-  email_address?: string;
-  account_id?: string;
-  account_status?: string;
-  name?: {
-    given_name?: string;
-    surname?: string;
-  };
-
-  businessName?: string;
-
-  address?: {
-    address_line1?: string;
-    address_line2?: string;
-    admin_area2?: string;
-    admin_area1?: string;
-    postal_code?: string;
-  };
-}
-export interface PaymentSourceResponse {
-  card?: CardResponse;
-  paypal?: PaypalWalletResponse;
-}
+import { IOrder, IVariantCart } from "@/types/order.type";
+import { IVariant } from "@/types/product.type";
 
 const INIT_FORM_DATA = {
+  _id: "",
+  paymentId: "",
+  name: "",
+  trackingNumber: "",
+  logisticPartner: "",
   products: [],
   total: 0,
   tax: 0,
   email: "",
+  createdAt: "",
+  updatedAt: "",
   status: "PENDING",
   paymentMethod: "paypal",
-  name: "",
   shippingAddress: {
     fullName: "",
     address: "",
@@ -112,32 +36,13 @@ const INIT_FORM_DATA = {
     phone: "",
   },
 };
+
+type IVariantResponse = IVariant & { name: string };
 export default function OrderForm({ id }: { id?: string }) {
-  const [formData, setFormData] = useState<{
-    products: IVariantCart[];
-    total: number;
-    tax: number;
-    email: string;
-    status: string;
-    paymentMethod: string;
-    name: string;
-    logisticPartner?: string;
-    trackingNumber?: string;
-    isSendEmail?: boolean;
-    paymentId?: string;
-    paymentSource?: PaymentSourceResponse;
-    shippingAddress: {
-      fullName: string;
-      address: string;
-      city: string;
-      postalCode: string;
-      country: string;
-      phone: string;
-    };
-  }>(INIT_FORM_DATA);
+  const [formData, setFormData] = useState<IOrder>(INIT_FORM_DATA);
 
   const [loading, setLoading] = useState(false);
-  const [variants, setVariants] = useState<Variant[]>([]);
+  const [variants, setVariants] = useState<IVariantResponse[]>([]);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [query, setQuery] = useState("");
   const [open, setOpen] = useState(false);
@@ -214,8 +119,8 @@ export default function OrderForm({ id }: { id?: string }) {
 
         const data = await res.json();
         const variantsData = data.data.flatMap(
-          (product: { name: string; variants: Variant[] }) =>
-            product.variants.map((variant: Variant) => ({
+          (product: { name: string; variants: IVariantCart[] }) =>
+            product.variants.map((variant: IVariantCart) => ({
               ...variant,
               name: product.name, // Thêm name của product vào mỗi variant
             }))
@@ -233,8 +138,8 @@ export default function OrderForm({ id }: { id?: string }) {
   // Lọc sản phẩm dựa trên input
 
   // Thêm sản phẩm vào danh sách đơn hàng
-  const addProduct = (product: Variant) => {
-    setFormData((prev: typeof formData) => {
+  const addProduct = (product: IVariantResponse) => {
+    setFormData((prev: IOrder) => {
       const exists = prev.products.find(
         (p: IVariantCart) => p.variantId === product._id
       );
@@ -247,8 +152,8 @@ export default function OrderForm({ id }: { id?: string }) {
           name: product.name,
           variantId: product._id,
           quantity: 1,
-          price: product.salePrice,
-          attributes: product.attributes,
+          price: product.price,
+          title: product.title,
         },
       ];
 
@@ -327,9 +232,12 @@ export default function OrderForm({ id }: { id?: string }) {
       const payload = {
         ...formData,
         total: Number(
-          formData.products
-            .reduce((sum, item) => sum + item.price * item.quantity, 0)
-            .toFixed(2)
+          (
+            formData.products.reduce(
+              (sum, item) => sum + item.price * item.quantity,
+              0
+            ) + Number(formData.tax || 0)
+          ).toFixed(2)
         ),
         tax: Number(formData.tax || 0),
       };
@@ -402,12 +310,10 @@ export default function OrderForm({ id }: { id?: string }) {
                           className="block w-full px-4 py-2 text-left rounded-md hover:bg-accent transition"
                         >
                           <p>
-                            {variant.name} - {variant.salePrice} đ
+                            {variant.name} - {variant.price} đ
                           </p>
                           <p className="text-sm text-gray-500">
-                            {variant.attributes
-                              ?.map((attr) => `${attr.name}: ${attr.value}`)
-                              .join(", ")}
+                            {variant.title}
                           </p>
                         </button>
                       ))}
@@ -430,14 +336,7 @@ export default function OrderForm({ id }: { id?: string }) {
                         <p className="text-accent-foreground line-clamp-2">
                           {product.name}{" "}
                         </p>
-                        <p className="text-sm text-gray-500">
-                          {product.attributes
-                            ?.map(
-                              (att: { name: string; value: string }) =>
-                                `${att.name}: ${att.value}`
-                            )
-                            .join(", ")}{" "}
-                        </p>
+                        <p className="text-sm text-gray-500">{product.title}</p>
                       </div>
                       <QuantityCart
                         quantity={product.quantity}
@@ -605,6 +504,7 @@ export default function OrderForm({ id }: { id?: string }) {
                     <option value="COMPLETE">Hoàn thành</option>
                     <option value="REFUNDED">Đã hoàn tiền</option>
                     <option value="CANCELLED">Đã hủy</option>
+                    <option value="PAID">Đã thanh toán</option>
                   </Select>
                 </div>
                 <div className="col-span-1">

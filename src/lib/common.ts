@@ -2,7 +2,7 @@ const FILE_SIZE = 2 * 1024 * 1024; // 2MB
 
 import { toast } from "sonner";
 
-import { convertIDToURL } from "./utils";
+import { convertIDToStaticURL } from "./utils";
 import { STORAGE_KEY } from "@/auth";
 import { API_URL } from "@/config";
 
@@ -42,7 +42,7 @@ export const uploadImage = async (
       throw new Error(data.message || "Upload failed.");
     }
 
-    const imageUpload = convertIDToURL(data.file, dimension ?? 250);
+    const imageUpload = convertIDToStaticURL(data.file, dimension ?? 250);
     return imageUpload;
   } catch (err) {
     console.error("Failed to upload images", err);
@@ -138,7 +138,7 @@ export const uploadImages = async (e: React.ChangeEvent<HTMLInputElement>) => {
       throw new Error(data.message || "Upload failed.");
     }
 
-    const images = data.files.map((file) => convertIDToURL(file, 400));
+    const images = data.files.map((file) => convertIDToStaticURL(file, 400));
     return images;
   } catch (err) {
     console.error("Failed to upload images", err);
@@ -291,9 +291,3 @@ export function calculateTax(countryCode: string, stateCode?: string): number {
   tax = euVAT[countryCode.toUpperCase()] ?? 0;
   return tax / 100;
 }
-
-// Test hàm
-console.log(calculateTax("US", "CA")); // 7.25
-console.log(calculateTax("DE")); // 19 (Germany)
-console.log(calculateTax("US", "TX")); // 6.25
-console.log(calculateTax("FR")); // 20 (France)

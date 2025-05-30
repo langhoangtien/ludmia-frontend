@@ -10,45 +10,14 @@ import {
 } from "@/components/ui/accordion";
 
 import ListPaymentMethod from "../list-payment-method";
-import { IProduct, IVariant } from "@/routes/admin/products";
+
 import StarIcon from "../icons/star-icon";
 import ReviewList from "../reviews";
 import { AddToCartSection } from "./views/add-to-cart";
 import { formatCurrency } from "@/lib/utils";
-interface IData extends IProduct {
-  images: string[];
-  variants: IVariant[];
-}
-const data = [
-  {
-    title: "Description",
-    content:
-      "Unleash the power of the ocean with our Organic Sea Moss and Shilajit, featuring highly potent clinically dosed formulas. This comprehensive formula combines 24 essential nutrients in 2 tablets, designed to enhance your overall health and vitality. Perfect for those seeking a powerful boost to their daily wellness regimen.",
-  },
-  {
-    title: "Health Benefits",
-    content:
-      "Our Organic Sea Moss and Shilajit are designed to support a range of health functions, enhancing your overall well-being. From boosting your immune system to supporting thyroid function and improving skin health, these supplements are your gateway to a healthier life. Additional benefits include energy enhancement, stress reduction, and support for weight management, all contributing to a more vibrant and healthier you.",
-  },
-  {
-    title: "How to Use",
-    content: (
-      <p>
-        {" "}
-        As a dietary supplement, take 2 tablets of Organic Sea Moss and 1
-        tablets of Shilajit per day. For the best results, take with a meal and
-        an 8oz glass of water or as directed by your healthcare professional.{" "}
-        <br /> You may take both supplements together or take 1 in the morning
-        and 1 in the evening depending on preference.{" "}
-      </p>
-    ),
-  },
-  {
-    title: "Product Guarantee",
-    content:
-      "Experience the benefits of our Dynamic Vitality Duo risk-free with our 30-day money-back guarantee. If you’re not fully satisfied with your wellness improvement, simply return the product within 30 days for a full refund",
-  },
-];
+import { useState } from "react";
+import { IProduct, IVariant } from "@/types/product.type";
+
 export default function ProductPage() {
   const productData = useLoaderData({
     from: "/products/$productId",
@@ -58,11 +27,11 @@ export default function ProductPage() {
     const element = productData.variants[index];
     if (element.image) slides.push(element.image);
   }
-  const product: IData = {
+  const [variant, setVariant] = useState<IVariant | null>(null);
+  const product: IProduct = {
     ...productData,
     variants: productData.variants.map((variant: IVariant) => ({
       ...variant,
-      title: variant.attributes.map((i) => `${i.name}:${i.value}`).join(", "),
       image: variant.image || productData.image || productData.images[0] || "",
     })),
   };
@@ -99,11 +68,11 @@ export default function ProductPage() {
             <p className="text-4xl flex space-x-2 ">
               <span className="font-normal ">
                 {" "}
-                {formatCurrency(product.minPrice || 0)}
+                {formatCurrency(variant?.price || 0)}
               </span>
               <span className="line-through  ">
-                {!!product.minCompareAtPrice &&
-                  formatCurrency(product.minCompareAtPrice)}
+                {!!variant?.compareAtPrice &&
+                  formatCurrency(variant.compareAtPrice)}
               </span>{" "}
             </p>
             <p className="text-gray-500 text-sm">
@@ -114,7 +83,11 @@ export default function ProductPage() {
             <p className="line-clamp-3">{product.introduction}</p>
           </div>
           <div className="mt-6">
-            <AddToCartSection product={product} />
+            <AddToCartSection
+              variant={variant}
+              setVariant={setVariant}
+              product={product}
+            />
           </div>
 
           <div className="mx-2 flex items-center space-x-4 md:space-x-8 text-accent-foreground font-semibold    justify-around sm:text-sm">
@@ -134,10 +107,10 @@ export default function ProductPage() {
           <ListPaymentMethod />
           <div>
             <Accordion type="single" collapsible className="w-full">
-              {data.map((item, index) => (
+              {product.accordionItems?.map((item, index) => (
                 <AccordionItem key={item.title} value={`item-${index}`}>
                   <AccordionTriggerCustom>{item.title}</AccordionTriggerCustom>
-                  <AccordionContent>{item.content}</AccordionContent>
+                  <AccordionContent>{item.value}</AccordionContent>
                 </AccordionItem>
               ))}
             </Accordion>
@@ -157,7 +130,7 @@ export default function ProductPage() {
       )}
       <div className="col-span-2">
         {" "}
-        <ReviewList />
+        <ReviewList slug={productData.slug} />
       </div>
     </div>
   );

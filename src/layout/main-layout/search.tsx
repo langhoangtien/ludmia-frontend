@@ -1,4 +1,3 @@
-import { Product } from "@/components/admin/product-form";
 import Image from "@/components/image";
 import SpinerLoading from "@/components/loading/spiner-loading";
 import { Button } from "@/components/ui/button";
@@ -12,6 +11,7 @@ import {
 } from "@/components/ui/sheet";
 import { API_URL } from "@/config";
 import { useDebounce } from "@/hooks/use-debounce";
+import { IProduct } from "@/types/product.type";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { ArrowRight, SearchIcon, X, XIcon } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -31,7 +31,7 @@ function highlightText(text: string, query: string) {
 
 export default function SearchHeader() {
   const [query, setQuery] = useState("");
-  const [products, setProducts] = useState<Product[]>([]);
+  const [products, setProducts] = useState<IProduct[]>([]);
   const [loading, setLoading] = useState(false);
   const debouncedQuery = useDebounce(query, 500);
   const [open, setOpen] = useState(false);
@@ -177,7 +177,7 @@ export default function SearchHeader() {
                   {!loading && (
                     <div
                       onClick={handleRedirect}
-                      className="flex cursor-pointer items-center p-2 mt-2 border-t border-border justify-between"
+                      className="flex cursor-pointer items-center px-4 py-2 mt-2 border-t border-border justify-between"
                     >
                       <span>Search for "{query}"</span>
                       <ArrowRight

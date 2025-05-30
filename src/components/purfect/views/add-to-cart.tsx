@@ -4,40 +4,29 @@ import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
-import { CartItem, useCart } from "@/cart";
-import { IProduct, IVariant } from "@/routes/admin/products";
+import { useCart } from "@/cart";
+import {
+  IProduct,
+  IVariant,
+  IVariantOption,
+  IVariantOptionValue,
+} from "@/types/product.type";
+import { CheckIcon } from "lucide-react";
+import Image from "@/components/image";
 
-interface IvariantCart extends IVariant {
-  title: string;
-}
-interface IProductCart extends IProduct {
-  variants: IvariantCart[];
-}
-export default function AddToCart(product: CartItem) {
-  const { addItem } = useCart();
-  const handleAddToCart = () => {
-    addItem(product);
-  };
-  return (
-    <Button
-      onClick={handleAddToCart}
-      className="w-full  h-12 text-base font-semibold"
-    >
-      Add To Cart | 50% OFF ➜
-    </Button>
-  );
-}
+type AddToCartSectionProps = {
+  product: IProduct;
+  setVariant: (variant: IVariant) => void;
+  variant: IVariant | null;
+};
 
-export function AddToCartSection({ product }: { product: IProductCart }) {
+export function AddToCartSection({
+  product,
+  setVariant,
+  variant,
+}: AddToCartSectionProps) {
   const { addItem } = useCart();
-  const [variant, setVariant] = useState<{
-    id: string;
-    title: string;
-    price: number;
-    image?: string;
-    quantity: number;
-    name: string;
-  } | null>(null);
+
   const [selectedOptions, setSelectedOptions] = useState<
     Record<string, string>
   >({});
@@ -55,36 +44,29 @@ export function AddToCartSection({ product }: { product: IProductCart }) {
       return;
     }
 
-    const id = variant.id.split("/").pop();
+    const id = variant._id?.split("/").pop();
     if (!id) {
       toast.error("Invalid variant id");
       return;
     }
     addItem({
-      ...variant,
       id,
       image: variant.image || "",
+      name: product.name,
+      price: variant.price,
+      title: variant.title,
     });
   };
 
   const getSelectedVariant = () => {
-    const matchedVariant = product.variants.find((variant: IvariantCart) =>
+    const matchedVariant = product.variants.find((variant: IVariant) =>
       variant.attributes.every(
-        (opt: { name: string; value: string }) =>
-          selectedOptions[opt.name] === opt.value
+        (opt: { name: string; title: string }) =>
+          selectedOptions[opt.name] === opt.title
       )
     );
     if (matchedVariant) {
-      setVariant({
-        id: matchedVariant._id,
-        title: matchedVariant.attributes
-          .map((i) => `${i.name}:${i.value}`)
-          .join(", "),
-        price: matchedVariant.price,
-        image: matchedVariant.image,
-        quantity: 1,
-        name: product.name,
-      });
+      setVariant(matchedVariant);
     }
   };
 
@@ -98,24 +80,17 @@ export function AddToCartSection({ product }: { product: IProductCart }) {
           acc: Record<string, string>,
           option: {
             name: string;
-            value: string;
+            title: string;
           }
         ) => {
-          acc[option.name] = option.value;
+          acc[option.name] = option.title;
           return acc;
         },
         {}
       );
 
       setSelectedOptions(defaultOptions);
-      setVariant({
-        id: firstVariant._id,
-        title: firstVariant.title,
-        price: firstVariant.price,
-        image: firstVariant.image,
-        quantity: 1,
-        name: product.name,
-      });
+      setVariant(firstVariant);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -127,31 +102,23 @@ export function AddToCartSection({ product }: { product: IProductCart }) {
   }, [selectedOptions]);
   return (
     <div className="space-y-4">
-      {product.variantOptions.map(
-        (option: { name: string; values: string[] }) => (
-          <div className="mt-6 flex flex-col space-y-4" key={option.name}>
+      <div>
+        {product.variantOptions.map((option: IVariantOption) => (
+          <div className="mt-4 flex flex-col space-y-3" key={option.name}>
             <h4>{option.name}</h4>
-            <div className="flex flex-wrap gap-2">
-              {option.values.map((value: string) => (
-                <Button
-                  variant={"outline"}
-                  size="lg"
-                  key={value}
-                  onClick={() => handleOptionChange(option.name, value)}
-                  className={`${
-                    selectedOptions[option.name] === value
-                      ? "border-primary dark:border-primary"
-                      : "border-border "
-                  }`}
-                >
-                  {value}
-                </Button>
+            <div className="flex flex-wrap items-center gap-2">
+              {option.values.map((value: IVariantOptionValue) => (
+                <OptionSelect
+                  value={value}
+                  handleOptionChange={handleOptionChange}
+                  optionName={selectedOptions[option.name]}
+                  option={option}
+                />
               ))}
             </div>
           </div>
-        )
-      )}
-
+        ))}
+      </div>
       <Button
         onClick={handleAddToCart}
         className="w-full  h-12 text-base font-semibold"
@@ -161,3 +128,61 @@ export function AddToCartSection({ product }: { product: IProductCart }) {
     </div>
   );
 }
+
+type OptionProps = {
+  value: IVariantOptionValue;
+  option: IVariantOption;
+  optionName: string;
+  handleOptionChange: (name: string, value: string) => void;
+};
+const OptionSelect = ({
+  value,
+  option,
+  optionName,
+  handleOptionChange,
+}: OptionProps) => {
+  if (option.type === "color")
+    return (
+      <span
+        key={value.title}
+        onClick={() => handleOptionChange(option.name, value.title)}
+        className={`rounded-full   border-2 flex justify-center items-center cursor-pointer ${
+          optionName === value.title ? " size-9 " : "size-8 "
+        }`}
+        style={{ backgroundColor: value.color }}
+      >
+        {optionName === value.title && (
+          <CheckIcon className="text-accent size-4" />
+        )}
+      </span>
+    );
+
+  if (option.type === "image")
+    return (
+      <Image
+        key={value.title}
+        onClick={() => handleOptionChange(option.name, value.title)}
+        className={`rounded-xs size-10 border flex justify-center items-center cursor-pointer ${
+          optionName === value.title
+            ? " border-accent-foreground "
+            : "border-border "
+        }`}
+        src={value.image}
+      ></Image>
+    );
+  return (
+    <Button
+      variant={"outline"}
+      size="lg"
+      key={value.title}
+      onClick={() => handleOptionChange(option.name, value.title)}
+      className={`${
+        optionName === value.title
+          ? "border-accent-foreground dark:border-accent-foreground"
+          : "border-border "
+      }`}
+    >
+      {value.title}
+    </Button>
+  );
+};

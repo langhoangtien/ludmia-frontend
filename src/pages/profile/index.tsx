@@ -17,7 +17,7 @@ import Setting from "./setting";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { useAuth } from "@/auth";
-import { convertIDToURL } from "@/lib/utils";
+import { convertIDToStaticURL } from "@/lib/utils";
 
 const tabs = [
   { name: "info", icon: UserRoundIcon, title: "Thông tin" },
@@ -30,7 +30,7 @@ export default function ProfilePage() {
   const auth = useAuth();
   const user = auth.user;
 
-  const avatar = convertIDToURL(user?.image || "");
+  const avatar = convertIDToStaticURL(user?.image || "");
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
 
