@@ -46,7 +46,9 @@ export default function CartHeader() {
         className="w-full max-w-md md:max-w-lg lg:max-w-xl xl:max-w-2xl"
       >
         <SheetHeader>
-          <SheetTitle>Your Bag</SheetTitle>
+          <SheetTitle className="font-bold text-3xl">
+            Cart • {getCartCount()} items
+          </SheetTitle>
           <SheetDescription></SheetDescription>
         </SheetHeader>
         <div className="flex-grow overflow-auto py-4 border-t px-6">
@@ -151,12 +153,7 @@ export default function CartHeader() {
               </Link>
             </div>
           ) : (
-            <SheetClose>
-              {" "}
-              <Button size="lg" className="w-full" variant={"outline"}>
-                Continue Shopping
-              </Button>
-            </SheetClose>
+            <SheetClose> </SheetClose>
           )}
         </SheetFooter>
       </SheetContent>
