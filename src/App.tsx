@@ -29,6 +29,7 @@ function InnerApp() {
 
 function App() {
   useVisitorTracker();
+
   return (
     <AuthProvider>
       <FacebookPixel />

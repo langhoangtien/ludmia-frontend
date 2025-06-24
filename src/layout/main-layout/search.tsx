@@ -80,7 +80,11 @@ export default function SearchHeader() {
           ></SearchIcon>
         </div>
       </SheetTrigger>
-      <SheetContent showClose={false} side={"top"}>
+      <SheetContent
+        onOpenAutoFocus={(e) => e.preventDefault()}
+        showClose={false}
+        side={"top"}
+      >
         <div className="w-full relative flex flex-row space-x-4 justify-center items-center py-8 px-4">
           <div className="w-full md:relative max-w-2xl">
             <div className="relative z-20 ">

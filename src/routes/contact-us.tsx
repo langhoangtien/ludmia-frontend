@@ -139,7 +139,7 @@ function ContactForm() {
       {submitted ? (
         <p className="text-green-500 flex items-center space-x-0.5">
           <CheckCheck className="size-5" />{" "}
-          <span>Your message has been sent</span>
+          <span>Your message has been sent </span>
           successfully!
         </p>
       ) : (

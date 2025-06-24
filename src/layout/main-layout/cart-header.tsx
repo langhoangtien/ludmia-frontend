@@ -30,7 +30,7 @@ export default function CartHeader() {
       <SheetTrigger asChild>
         <div className="relative size-11  items-center justify-center cursor-pointer inline-flex">
           {!!getCartCount() && (
-            <span className="absolute inline-flex items-center justify-center size-[14px] bg-primary right-1 bottom-1 rounded-full text-[10px] shadow">
+            <span className="absolute inline-flex items-center justify-center text-background size-[14px] bg-primary right-1 bottom-1 rounded-full text-[10px] shadow">
               {getCartCount()}
             </span>
           )}

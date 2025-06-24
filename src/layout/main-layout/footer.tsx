@@ -34,7 +34,7 @@ const MENU = [
 ];
 export default function Footer() {
   return (
-    <footer className="bg-primary text-accent border-border ">
+    <footer className="bg-primary text-background border-border ">
       <div className="bg-background text-primary">
         {" "}
         <svg
@@ -70,8 +70,8 @@ export default function Footer() {
           {/* More Info */}
           {MENU.map((item) => (
             <div key={item.title}>
-              <h3 className="text-lg mb-4 font-semibold">{item.title}</h3>
-              <ul className="mt-2 space-y-4  text-base">
+              <h3 className="text-xl mb-4 font-bold">{item.title}</h3>
+              <ul className="mt-2 space-y-4  text-sm">
                 {item.items.map((subItem) => (
                   <li
                     key={subItem.title}
@@ -90,8 +90,8 @@ export default function Footer() {
         </div>
 
         {/* Bottom Section */}
-        <div className="mt-8 border-t pt-4 flex flex-col md:flex-row justify-between items-center text-sm">
-          <div className="flex items-center space-x-2">
+        <div className="mt-8 border-t pt-4 flex flex-col md:flex-row md:justify-between justify-center gap-2 items-center text-sm">
+          <div className="flex items-center gap-2">
             <span className="text-red-600">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -118,13 +118,13 @@ export default function Footer() {
             </span>
             <span>English (EN) | USD</span>
           </div>
-
-          <div className="flex space-x-2 mt-2 md:mt-0">
-            <p className="mt-2 md:mt-0 ">Powered by {COMPANY_NAME}</p>
-            <ListPaymentMethod />
-          </div>
+          <ListPaymentMethod />
         </div>
       </div>
+      <p className="mt-2 md:mt-0 text-center text-xs p-2 ">
+        © {new Date().getFullYear()} <strong>{COMPANY_NAME} LLC</strong>. All
+        rights reserved.
+      </p>
     </footer>
   );
 }
