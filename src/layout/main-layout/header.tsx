@@ -7,7 +7,7 @@ export default function Header() {
   return (
     <header className="w-full sticky top-0 z-50  bg-background/90 shadow-md ">
       {/* <CarouselHeader /> */}
-      <div className="mx-auto max-w-7xl p-2 md:p-4">
+      <div className="mx-auto max-w-7xl md:p-2">
         {" "}
         {isMobile ? <NavMobile /> : <NavDesktop />}
       </div>

@@ -1,5 +1,4 @@
 import { useCart } from "@/cart";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Minus, Plus, ShoppingCart } from "lucide-react";
 
@@ -29,14 +28,18 @@ export default function CartHeader() {
   return (
     <Sheet open={isOpen} onOpenChange={setIsOpen}>
       <SheetTrigger asChild>
-        <Button className="relative" size="icon" variant="outline">
+        <div className="relative size-11  items-center justify-center cursor-pointer inline-flex">
           {!!getCartCount() && (
-            <Badge className="absolute -top-2.5 -right-2 min-w-[1.25rem] min-h-[1.25rem] flex items-center justify-center rounded-full text-xs shadow">
+            <span className="absolute inline-flex items-center justify-center size-[14px] bg-primary right-1 bottom-1 rounded-full text-[10px] shadow">
               {getCartCount()}
-            </Badge>
+            </span>
           )}
-          <ShoppingCart strokeWidth={1} className="text-accent-foreground" />
-        </Button>
+          <ShoppingCart
+            strokeWidth={1}
+            size={22}
+            className="text-accent-foreground"
+          />
+        </div>
       </SheetTrigger>
       <SheetContent
         onOpenAutoFocus={(e) => e.preventDefault()}

@@ -1,4 +1,3 @@
-import { BRANCH } from "@/config";
 import { createContext, useContext, useEffect, useState, useMemo } from "react";
 
 type Theme = "dark" | "light" | "system";
@@ -40,8 +39,8 @@ const ThemeProviderContext = createContext<ThemeProviderState | undefined>(
 
 export function ThemeProvider({
   children,
-  defaultTheme = BRANCH === "quitmood" ? "dark" : "light",
-  defaultColor = BRANCH === "quitmood" ? "theme-yellow" : "theme-default",
+  defaultTheme = "light",
+  defaultColor = "theme-default",
   defaultRadius = "0.5rem",
   storageKey = "vite-ui-theme",
   storageColorKey = "vite-ui-color",

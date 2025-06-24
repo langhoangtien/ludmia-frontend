@@ -34,13 +34,12 @@ const MENU = [
 ];
 export default function Footer() {
   return (
-    <footer className="border-t bg-accent border-border  py-8 px-4 md:px-16">
+    <footer className="border-t bg-primary text-accent border-border  py-8 px-4 md:px-16">
       <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
         {/* Company Info */}
-        <div className="space-y-4">
-          <LogoWithLink className="w-32 h-16" />
+        <div className="space-y-4 flex flex-col items-start justify-start">
+          <LogoWithLink />
 
-          <h2 className="text-2xl font-bold">{COMPANY_NAME} LLC.</h2>
           <p className="text-sm mt-2">Email: {CONTACT_EMAIL}</p>
           {/* <div className="flex space-x-4 mt-4 text-xl">
           <FaFacebookF className="cursor-pointer hover:text-blue-500" />
@@ -102,9 +101,7 @@ export default function Footer() {
         </div>
 
         <div className="flex space-x-2 mt-2 md:mt-0">
-          <p className="mt-2 md:mt-0 text-gray-400">
-            Powered by {COMPANY_NAME}
-          </p>
+          <p className="mt-2 md:mt-0 ">Powered by {COMPANY_NAME}</p>
           <ListPaymentMethod />
         </div>
       </div>

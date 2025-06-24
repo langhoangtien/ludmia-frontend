@@ -1,31 +1,28 @@
-import { LogoWithLink } from "@/components/logo";
-import { Button } from "@/components/ui/button";
 import { Link, useMatchRoute } from "@tanstack/react-router";
 import { User2Icon } from "lucide-react";
 import SearchHeader from "./search";
 import CartHeader from "./cart-header";
 
 export const menu = [
-  { name: "About Us", link: "/about-us" },
+  { name: "Home", link: "/" },
+  { name: "Products", link: "/search" },
   { name: "Buy", link: "/products/purfect-fuel-blend" },
   { name: "Contact", link: "/contact-us" },
-  { name: "Track Order", link: "/track-order" },
 ];
 export default function NavDesktop() {
   const matchRoute = useMatchRoute();
 
   return (
     <div className="flex flex-col justify-center  space-y-8 ">
-      <div className="flex justify-between items-center space-x-1 py-2 px-4">
-        <LogoWithLink />
-        <div className="flex space-x-8 justify-center">
+      <div className="grid grid-cols-3 space-x-1 py-2 px-4">
+        <div className="flex space-x-8 justify-start items-center">
           {menu.map((item) => (
             <Link
               key={item.name}
-              className={`text-base font-normal border-b-2 hover:border-accent-foreground  py-1 ${
+              className={`text-sm font-normal uppercase   ${
                 matchRoute({ to: item.link })
-                  ? "border-accent-foreground"
-                  : "border-transparent"
+                  ? "bg-primary/80 text-background px-2 rounded-md"
+                  : "hover:text-primary/80"
               }`}
               to={item.link}
             >
@@ -33,18 +30,24 @@ export default function NavDesktop() {
             </Link>
           ))}
         </div>
-        <span className="flex space-x-2 items-center ">
+        <div className="flex justify-center items-center">
+          <Link to="/" className="font-extrabold text-3xl">
+            QUITMOOD.
+          </Link>
+        </div>
+
+        <span className="flex  items-center justify-end">
           <SearchHeader />
           <CartHeader />
           <Link to="/login">
-            <Button size="icon" variant="outline">
+            <div className="relative size-11 flex items-center justify-center cursor-pointer">
               {" "}
               <User2Icon
                 strokeWidth={1}
+                size={22}
                 className="text-accent-foreground"
-                size={24}
               />
-            </Button>
+            </div>
           </Link>
         </span>
       </div>

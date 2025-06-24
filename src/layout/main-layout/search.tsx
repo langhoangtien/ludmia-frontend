@@ -72,12 +72,13 @@ export default function SearchHeader() {
   return (
     <Sheet open={open} onOpenChange={handleCloseSheet}>
       <SheetTrigger asChild>
-        <Button size="icon" variant="outline">
+        <div className="relative size-11 flex items-center justify-center cursor-pointer">
           <SearchIcon
             strokeWidth={1}
-            className="size-4 cursor-pointer"
+            size={22}
+            className="cursor-pointer"
           ></SearchIcon>
-        </Button>
+        </div>
       </SheetTrigger>
       <SheetContent showClose={false} side={"top"}>
         <div className="w-full relative flex flex-row space-x-4 justify-center items-center py-8 px-4">

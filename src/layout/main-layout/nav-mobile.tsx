@@ -9,36 +9,51 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 
-import { Menu } from "lucide-react";
+import { Menu, UserIcon } from "lucide-react";
 
 import { menu } from "./nav-desktop";
-import { LogoWithLink } from "@/components/logo";
 import SearchHeader from "./search";
 import CartHeader from "./cart-header";
 import { Link } from "@tanstack/react-router";
 
 export default function NavMobile() {
   return (
-    <div className="flex justify-between items-center space-x-1 py-2 px-4">
+    <div className="grid grid-cols-3 space-x-1 py-2 px-4">
       <Sheet>
         <SheetTrigger asChild>
-          <Menu strokeWidth={1} className="size-6 "></Menu>
+          <div className="flex space-x-8 justify-start items-center">
+            {" "}
+            <Menu strokeWidth={1} size={24}></Menu>
+          </div>
         </SheetTrigger>
-        <SheetContent onOpenAutoFocus={(e) => e.preventDefault()} side={"left"}>
-          <SheetHeader>
-            <SheetTitle></SheetTitle>
+        <SheetContent
+          onOpenAutoFocus={(e) => e.preventDefault()}
+          side={"left"}
+          className="w-9/10 max-w-md"
+          showClose={false}
+        >
+          <SheetHeader className="border-b border-border">
+            <SheetTitle className="text-2xl font-extrabold">Menu</SheetTitle>
             <SheetDescription></SheetDescription>
           </SheetHeader>
-          <div className="flex flex-col space-y-4 p-4 ">
-            {menu.map((item) => (
-              <Link
-                key={item.name}
-                className="text-lg font-semibold "
-                to={item.link}
-              >
-                {item.name}
+          <div>
+            <div className="flex flex-col space-y-4 p-4 border-b border-border">
+              {menu.map((item) => (
+                <Link
+                  key={item.name}
+                  className="text-xl font-normal uppercase"
+                  to={item.link}
+                >
+                  {item.name}
+                </Link>
+              ))}
+            </div>
+            <div className=" p-4">
+              <Link to="/login" className="flex space-x-2 items-center ">
+                <UserIcon size={22} />
+                <span className="font-bold">Login</span>
               </Link>
-            ))}
+            </div>
           </div>
           <SheetFooter>
             <SheetClose asChild>
@@ -48,8 +63,12 @@ export default function NavMobile() {
         </SheetContent>
       </Sheet>
 
-      <LogoWithLink />
-      <span className="flex space-x-2 items-center">
+      <div className="flex justify-center items-center">
+        <Link to="/" className="font-extrabold text-2xl">
+          QUITMOOD.
+        </Link>
+      </div>
+      <span className="flex  items-center justify-end">
         <SearchHeader />
         <CartHeader />
       </span>

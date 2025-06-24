@@ -233,11 +233,11 @@ const ProductCard = ({
         src={product.image || product.images[0] || ""}
       />
       {!!discount && (
-        <span className="rounded-l-none rounded-r-md bg-primary inline-flex text-accent justify-center px-2 py-0.5 items-center">
+        <span className="rounded-l-none rounded-r-md bg-primary inline-flex text-accent justify-center px-2 py-0.5 font-bold items-center">
           <TagIcon className="mr-1" size={16} /> Save {discount}%
         </span>
       )}
-      <div className="text-center flex-flex-col text-sm md:text-lg  items-center justify-center p-2 space-y-2">
+      <div className="text-center flex-flex-col text-sm md:text-lg font-bold  items-center justify-center p-2 space-y-2">
         <h3 className="hover:underline line-clamp-2 cursor-pointer">
           {product.name}
         </h3>

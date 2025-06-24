@@ -141,7 +141,7 @@ function ContactPage() {
         </div>
         {error && <p className="text-red-500">{error}</p>}
 
-        <Table>
+        <Table className="overflow-x-auto max-h-[600px]">
           <TableHeader>
             <TableRow>
               <TableHead>
@@ -157,6 +157,7 @@ function ContactPage() {
               <TableHead className="max-w-sm">Email</TableHead>
               <TableHead>Tên</TableHead>
               <TableHead>Lý do</TableHead>
+              <TableHead>Ngày tạo</TableHead>
               <TableHead>Nội dung</TableHead>
               <TableHead>Hành động</TableHead>
             </TableRow>
@@ -180,7 +181,7 @@ function ContactPage() {
                 <TableCell>{contact.email}</TableCell>
                 <TableCell>{contact.name}</TableCell>
                 <TableCell>{contact.issueType}</TableCell>
-                <TableCell>{contact.message}</TableCell>
+
                 <TableCell>
                   {new Date(contact.createdAt).toLocaleString("vi-VN", {
                     year: "numeric",
@@ -191,6 +192,7 @@ function ContactPage() {
                     second: "2-digit",
                   })}
                 </TableCell>
+                <TableCell className="truncate">{contact.message}</TableCell>
               </TableRow>
             ))}
           </TableBody>
