@@ -105,7 +105,7 @@ function ImportReviewsPage() {
             disabled={loading}
             value={value}
             onChange={(e) => setValue(e.target.value)}
-            placeholder='{"reviews": [{"customer": "John Doe", "productId": "123", "title": "Great!", "body": "Very nice product", "rating": 5, "createdAt": "2024-03-31T12:00:00Z"}]}'
+            placeholder='[{"customer": "John Doe", "productId": "123", "title": "Great!", "body": "Very nice product", "rating": 5, "createdAt": "2024-03-31T12:00:00Z"}]'
             className="resize-none h-48"
           />
           <div className="flex justify-end">
