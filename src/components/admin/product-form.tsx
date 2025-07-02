@@ -11,7 +11,14 @@ import {
 } from "@/components/ui/table";
 import { z } from "zod";
 import { toast } from "sonner";
-import { Loader2, PencilLineIcon, PlusIcon, Trash2Icon, X } from "lucide-react";
+import {
+  ArrowUp,
+  Loader2,
+  PencilLineIcon,
+  PlusIcon,
+  Trash2Icon,
+  X,
+} from "lucide-react";
 
 import UploadIllustration from "@/assets/illustrations/upload-illustration";
 
@@ -533,6 +540,7 @@ export default function ProductForm({ id }: { id?: string }) {
                         className="w-20 h-20 object-cover rounded-md"
                       />
                       <span
+                        title="Xóa ảnh"
                         onClick={() => {
                           setFormData((prev) => {
                             const newImages = prev.images.filter(
@@ -546,6 +554,21 @@ export default function ProductForm({ id }: { id?: string }) {
                         {" "}
                         <X strokeWidth={1} size={16} />
                       </span>
+                      {index !== 0 && (
+                        <span
+                          onClick={() => {
+                            setFormData((prev) => {
+                              const images = [...prev.images];
+                              const selected = images.splice(index, 1)[0];
+                              return { ...prev, images: [selected, ...images] };
+                            });
+                          }}
+                          className="cursor-pointer size-5 flex justify-center items-center absolute bottom-1 left-1 rounded-full bg-yellow-500 text-white"
+                          title="Đặt làm ảnh đại diện"
+                        >
+                          <ArrowUp strokeWidth={1} size={14} />
+                        </span>
+                      )}
                     </div>
                   ))}
                 </div>
