@@ -563,7 +563,7 @@ export default function ProductForm({ id }: { id?: string }) {
                               return { ...prev, images: [selected, ...images] };
                             });
                           }}
-                          className="cursor-pointer size-5 flex justify-center items-center absolute bottom-1 left-1 rounded-full bg-yellow-500 text-white"
+                          className="cursor-pointer size-5 flex justify-center items-center absolute bottom-1 left-1 rounded-full bg-accent "
                           title="Đặt làm ảnh đại diện"
                         >
                           <ArrowUp strokeWidth={1} size={14} />
