@@ -39,6 +39,7 @@ import { Route as BlogsBlogSlugImport } from './routes/blogs/$blogSlug'
 import { Route as AdminUserImport } from './routes/admin/user'
 import { Route as AdminSettingsImport } from './routes/admin/settings'
 import { Route as AdminProfileImport } from './routes/admin/profile'
+import { Route as AdminFilesImport } from './routes/admin/files'
 import { Route as AdminUsersIndexImport } from './routes/admin/users/index'
 import { Route as AdminReviewsIndexImport } from './routes/admin/reviews/index'
 import { Route as AdminProductsIndexImport } from './routes/admin/products/index'
@@ -229,6 +230,12 @@ const AdminSettingsRoute = AdminSettingsImport.update({
 const AdminProfileRoute = AdminProfileImport.update({
   id: '/profile',
   path: '/profile',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
+
+const AdminFilesRoute = AdminFilesImport.update({
+  id: '/files',
+  path: '/files',
   getParentRoute: () => AdminRouteRoute,
 } as any)
 
@@ -503,6 +510,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TrackOrderImport
       parentRoute: typeof rootRoute
     }
+    '/admin/files': {
+      id: '/admin/files'
+      path: '/files'
+      fullPath: '/admin/files'
+      preLoaderRoute: typeof AdminFilesImport
+      parentRoute: typeof AdminRouteImport
+    }
     '/admin/profile': {
       id: '/admin/profile'
       path: '/profile'
@@ -712,6 +726,7 @@ declare module '@tanstack/react-router' {
 // Create and export the route tree
 
 interface AdminRouteRouteChildren {
+  AdminFilesRoute: typeof AdminFilesRoute
   AdminProfileRoute: typeof AdminProfileRoute
   AdminSettingsRoute: typeof AdminSettingsRoute
   AdminUserRoute: typeof AdminUserRoute
@@ -739,6 +754,7 @@ interface AdminRouteRouteChildren {
 }
 
 const AdminRouteRouteChildren: AdminRouteRouteChildren = {
+  AdminFilesRoute: AdminFilesRoute,
   AdminProfileRoute: AdminProfileRoute,
   AdminSettingsRoute: AdminSettingsRoute,
   AdminUserRoute: AdminUserRoute,
@@ -820,6 +836,7 @@ export interface FileRoutesByFullPath {
   '/shipping-policy': typeof ShippingPolicyRoute
   '/terms-of-service': typeof TermsOfServiceRoute
   '/track-order': typeof TrackOrderRoute
+  '/admin/files': typeof AdminFilesRoute
   '/admin/profile': typeof AdminProfileRoute
   '/admin/settings': typeof AdminSettingsRoute
   '/admin/user': typeof AdminUserRoute
@@ -870,6 +887,7 @@ export interface FileRoutesByTo {
   '/shipping-policy': typeof ShippingPolicyRoute
   '/terms-of-service': typeof TermsOfServiceRoute
   '/track-order': typeof TrackOrderRoute
+  '/admin/files': typeof AdminFilesRoute
   '/admin/profile': typeof AdminProfileRoute
   '/admin/settings': typeof AdminSettingsRoute
   '/admin/user': typeof AdminUserRoute
@@ -923,6 +941,7 @@ export interface FileRoutesById {
   '/shipping-policy': typeof ShippingPolicyRoute
   '/terms-of-service': typeof TermsOfServiceRoute
   '/track-order': typeof TrackOrderRoute
+  '/admin/files': typeof AdminFilesRoute
   '/admin/profile': typeof AdminProfileRoute
   '/admin/settings': typeof AdminSettingsRoute
   '/admin/user': typeof AdminUserRoute
@@ -977,6 +996,7 @@ export interface FileRouteTypes {
     | '/shipping-policy'
     | '/terms-of-service'
     | '/track-order'
+    | '/admin/files'
     | '/admin/profile'
     | '/admin/settings'
     | '/admin/user'
@@ -1026,6 +1046,7 @@ export interface FileRouteTypes {
     | '/shipping-policy'
     | '/terms-of-service'
     | '/track-order'
+    | '/admin/files'
     | '/admin/profile'
     | '/admin/settings'
     | '/admin/user'
@@ -1077,6 +1098,7 @@ export interface FileRouteTypes {
     | '/shipping-policy'
     | '/terms-of-service'
     | '/track-order'
+    | '/admin/files'
     | '/admin/profile'
     | '/admin/settings'
     | '/admin/user'
@@ -1193,6 +1215,7 @@ export const routeTree = rootRoute
     "/admin": {
       "filePath": "admin/route.tsx",
       "children": [
+        "/admin/files",
         "/admin/profile",
         "/admin/settings",
         "/admin/user",
@@ -1281,6 +1304,10 @@ export const routeTree = rootRoute
     },
     "/track-order": {
       "filePath": "track-order.tsx"
+    },
+    "/admin/files": {
+      "filePath": "admin/files.tsx",
+      "parent": "/admin"
     },
     "/admin/profile": {
       "filePath": "admin/profile.tsx",

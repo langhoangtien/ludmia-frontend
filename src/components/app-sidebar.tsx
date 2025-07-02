@@ -5,6 +5,7 @@ import {
   Command,
   ContactIcon,
   FilePenLine,
+  FileUpIcon,
   Frame,
   GalleryVerticalEnd,
   HomeIcon,
@@ -166,6 +167,11 @@ const data = {
       title: "Cài đặt",
       url: "/admin/settings",
       icon: SettingsIcon,
+    },
+    {
+      title: "Files",
+      url: "/admin/files",
+      icon: FileUpIcon,
     },
   ],
   projects: [
