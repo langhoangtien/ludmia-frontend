@@ -5,6 +5,7 @@ import { ThemeProvider } from "./components/theme-provider";
 import { CartProvider } from "./cart";
 import FacebookPixel from "./components/facebook-pixcel";
 import { useVisitorTracker } from "./hooks/use-visitor-tracker";
+import { TableProvider } from "./context/table-context";
 
 // Register things for typesafety
 declare module "@tanstack/react-router" {
@@ -35,7 +36,9 @@ function App() {
       <FacebookPixel />
       <ThemeProvider defaultTheme="light" storageKey="vite-ui-theme">
         <CartProvider>
-          <InnerApp />
+          <TableProvider>
+            <InnerApp />
+          </TableProvider>
         </CartProvider>
       </ThemeProvider>
     </AuthProvider>

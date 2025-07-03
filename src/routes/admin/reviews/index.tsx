@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -18,6 +18,9 @@ import { STORAGE_KEY } from "@/auth";
 import { LoadingTable } from "@/components/loading/table-loading";
 import Breadcrumbs from "@/components/ui/breadcrumbs";
 import { SortableHeader } from "@/components/admin/table-custom";
+import { useTableState } from "@/hooks/use-table-context";
+import { PaginationControls } from "@/components/admin/pagination";
+import { usePageSize } from "@/hooks/use-page-size";
 
 export const Route = createFileRoute("/admin/reviews/")({
   component: RouteComponent,
@@ -45,23 +48,40 @@ export interface Review {
 export default function ReviewPage() {
   const [reviews, setReviews] = useState<Review[]>([]);
   const [selectedReviews, setSelectedReviews] = useState<string[]>([]);
-  const [search, setSearch] = useState("");
-  const [page, setPage] = useState(1);
+  const { pageSize, setPageSize } = usePageSize("reviews");
+
+  const {
+    search,
+    setSearch,
+    page,
+    setPage,
+    sortField,
+    setSortField,
+    sortOrder,
+    setSortOrder,
+  } = useTableState("reviews");
+
   const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [sortField, setSortField] = useState<string>("createdAt");
-  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
 
   const debouncedSearch = useDebounce(search);
 
+  const isFirstRender = useRef(true);
+
   useEffect(() => {
-    setPage(1); // Reset trang về 1 khi search thay đổi
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      return;
+    }
+    setPage(1);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [debouncedSearch]);
 
   useEffect(() => {
     fetchReviews();
-  }, [debouncedSearch, page, sortField, sortOrder]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [debouncedSearch, page, sortField, sortOrder, pageSize]);
   const fetchReviews = async () => {
     setLoading(true);
     setError(null);
@@ -70,7 +90,7 @@ export default function ReviewPage() {
       if (!token) throw new Error("Unauthorized: No token found");
 
       const res = await fetch(
-        `${API_URL}/reviews?page=${page}&limit=10&search=${debouncedSearch}&sortBy=${sortField}&sortOrder=${sortOrder}`,
+        `${API_URL}/reviews?page=${page}&limit=${pageSize}&search=${debouncedSearch}&sortBy=${sortField}&sortOrder=${sortOrder}`,
         {
           headers: { Authorization: `Bearer ${token}` },
         }
@@ -90,7 +110,11 @@ export default function ReviewPage() {
 
   const handleSort = (field: string) => {
     setSortField(field);
-    setSortOrder((prev) => (prev === "asc" ? "desc" : "asc"));
+    const newOrder =
+      sortField === field && sortOrder === "asc" ? "desc" : "asc";
+    setSortOrder(newOrder);
+
+    // setSortOrder((prev) => (prev === "asc" ? "desc" : "asc"));
   };
 
   const handleDelete = async () => {
@@ -160,8 +184,8 @@ export default function ReviewPage() {
         </div>
         {error && <p className="text-red-500">{error}</p>}
 
-        <Table>
-          <TableHeader>
+        <Table className="h-96 max-h-96 overflow-auto">
+          <TableHeader className="sticky top-0 z-10 bg-background">
             <TableRow>
               <TableHead>
                 <Checkbox
@@ -174,6 +198,13 @@ export default function ReviewPage() {
               <SortableHeader
                 field="customer"
                 label="Khách hàng"
+                sortField={sortField}
+                sortOrder={sortOrder}
+                onSort={handleSort}
+              />
+              <SortableHeader
+                field="productId"
+                label="URL Sản phẩm"
                 sortField={sortField}
                 sortOrder={sortOrder}
                 onSort={handleSort}
@@ -211,7 +242,7 @@ export default function ReviewPage() {
               <TableHead>Hành động</TableHead>
             </TableRow>
           </TableHeader>
-          <TableBody>
+          <TableBody className="overflow-y-auto max-h-[calc(100vh-200px)]">
             {reviews.map((review) => (
               <TableRow key={review._id}>
                 <TableCell>
@@ -227,6 +258,7 @@ export default function ReviewPage() {
                   />
                 </TableCell>
                 <TableCell>{review.customer}</TableCell>
+                <TableCell>{review.productId}</TableCell>
                 <TableCell>{review.title}</TableCell>
                 <TableCell>{review.rating} ⭐</TableCell>
 
@@ -253,20 +285,16 @@ export default function ReviewPage() {
             ))}
           </TableBody>
         </Table>
-        <div className="flex justify-between mt-4">
-          <Button disabled={page === 1} onClick={() => setPage((p) => p - 1)}>
-            Prev
-          </Button>
-          <span>
-            Page {page} of {totalPages}
-          </span>
-          <Button
-            disabled={page === totalPages}
-            onClick={() => setPage((p) => p + 1)}
-          >
-            Next
-          </Button>
-        </div>
+
+        <PaginationControls
+          total={reviews.length}
+          page={page}
+          totalPages={totalPages}
+          pageSize={pageSize}
+          setPage={setPage}
+          setPageSize={setPageSize}
+          selectedCount={selectedReviews.length}
+        />
       </div>
     </div>
   );

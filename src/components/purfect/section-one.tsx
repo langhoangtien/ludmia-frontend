@@ -30,7 +30,7 @@ export default function SectionOne() {
         }}
         className="w-full flex h-[80vh] min-h-[420px] bgo-responsive relative items-start  justify-start md:px-40 lg:px-80 sm:px-32  md:items-center aspect-video"
       >
-        <div className="absolute inset-0 bg-black/95"></div>
+        <div className="absolute inset-0 bg-black/50"></div>
         <div className="flex w-full p-4 md:justify-start justify-center">
           {" "}
           <div className="relative flex flex-col text-white justify-start  text-center md:text-left space-y-4 max-w-lg">
