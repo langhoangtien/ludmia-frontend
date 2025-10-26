@@ -70,7 +70,7 @@ export default function SectionSix() {
             studies.
           </p>
 
-          <div className="flex md:gap-8 gap-4 text-center text-primary mt-6">
+          <div className="flex md:gap-8 gap-4 text-center  mt-6">
             {effects.map((effect) => (
               <div
                 key={effect.title}
@@ -92,7 +92,11 @@ export default function SectionSix() {
           <div className="mt-8 space-y-4">
             <Link to="/products/purfect-fuel-blend">
               {" "}
-              <Button size="lg" className="h-14">
+              <Button
+                variant="outline"
+                size="lg"
+                className="h-14 bg-transparent"
+              >
                 Start your {PRODUCT_NAME} Today <MoveRightIcon />
               </Button>
             </Link>

@@ -258,8 +258,12 @@ export default function ReviewPage() {
                   />
                 </TableCell>
                 <TableCell>{review.customer}</TableCell>
-                <TableCell>{review.productId}</TableCell>
-                <TableCell>{review.title}</TableCell>
+                <TableCell className="max-w-30 overflow-hidden">
+                  {review.productId}
+                </TableCell>
+                <TableCell className="max-w-30 overflow-hidden">
+                  {review.title}
+                </TableCell>
                 <TableCell>{review.rating} ⭐</TableCell>
 
                 <TableCell>{review.liked} </TableCell>

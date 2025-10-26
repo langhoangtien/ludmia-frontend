@@ -107,7 +107,7 @@ export function AddToCartPurfectSection({
             {option.values.map((value: IVariantOptionValue) => (
               <label
                 onClick={() => handleOptionChange(option.name, value.title)}
-                className={`flex text-background justify-between cursor-pointer items-center duration-300 transition-all rounded-full border h-19 py-6 px-4 border-border ${value.title === selectedOptions[option.name] ? "dark:bg-gray-300 bg-gray-900 " : "dark:bg-gray-100 bg-gray-600"}`}
+                className={`flex  justify-between cursor-pointer items-center duration-300 transition-all rounded-md border h-19 py-6 px-4 border-border ${value.title === selectedOptions[option.name] ? "border-primary " : ""}`}
                 htmlFor={value.title}
                 key={value.title}
               >
@@ -117,7 +117,7 @@ export function AddToCartPurfectSection({
                   />
                   <div className="space-y-0.5">
                     {" "}
-                    <p className="text-xl ">{value.title}</p>
+                    <p className="text-base font-semibold">{value.title}</p>
                     <p className="text-sm">{value.value}</p>
                   </div>
                 </div>
@@ -146,9 +146,11 @@ export function AddToCartPurfectSection({
 
 const RadioCustom = ({ checked }: { checked: boolean }) => {
   return (
-    <div className="flex border-2 border-background/80 items-center  justify-center rounded-full size-6">
+    <div
+      className={`flex  items-center  justify-center rounded-full size-[22px] ${checked ? "border-1 border-primary" : ""} `}
+    >
       <span
-        className={`${checked ? "size-3 bg-accent/80" : ""} rounded-full`}
+        className={`${checked ? "bg-primary size-[14px]" : " border-primary/60 border-2 size-4"}  inline-block rounded-full`}
       ></span>
     </div>
   );

@@ -48,10 +48,11 @@ export default function SectionOne() {
             <div className="flex flex-col space-y-2  md:space-y-4 items-center md:items-start ">
               <Link to={"/products/purfect-fuel-blend"}>
                 <Button
+                  variant="outline"
                   size="lg"
-                  className="h-14 flex items-center justify-between"
+                  className="h-14 flex items-center justify-between bg-transparent"
                 >
-                  <span> Start your {PRODUCT_NAME} Today</span>
+                  Start your {PRODUCT_NAME} Today
                   <ArrowRightIcon size={24} />
                 </Button>
               </Link>

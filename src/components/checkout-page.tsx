@@ -972,7 +972,7 @@ export function CheckoutPage() {
                     strokeWidth={1}
                     className="h-4 w-4 mr-2 flex-shrink-0"
                   />
-                  Your order qualifies for free shipping!h
+                  Your order qualifies for free shipping!
                 </p>
               </div>
             </div>
