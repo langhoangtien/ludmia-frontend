@@ -125,7 +125,7 @@ export default function Dashboard() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {visitor.topCountries.map((country) => (
+                {visitor.topCountries?.map((country) => (
                   <TableRow key={country.country}>
                     <TableCell className="font-medium">
                       {country.country}

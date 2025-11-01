@@ -78,7 +78,7 @@ export default function RadialChart({ data }: { data: RadialChartData[] }) {
                           y={viewBox.cy}
                           className="fill-foreground text-3xl font-bold"
                         >
-                          {data[0].visitors.toLocaleString()}
+                          {data[0].visitors?.toLocaleString()}
                         </tspan>
                         <tspan
                           x={viewBox.cx}

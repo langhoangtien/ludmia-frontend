@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { API_URL } from "@/config";
 import { createFileRoute } from "@tanstack/react-router";
-import { ImportIcon } from "lucide-react";
+import { FolderSyncIcon, ImportIcon } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 import { z } from "zod";
@@ -35,6 +35,43 @@ const reviewsSchema = z.array(reviewSchema);
 function ImportReviewsPage() {
   const [value, setValue] = useState("");
   const [loading, setLoading] = useState(false);
+
+  const handleMigrateMedia = async () => {
+    const ok = window.confirm(
+      "Bạn có chắc chắn muốn chạy migrate cho toàn bộ dữ liệu không?\nHành động này có thể mất vài phút!"
+    );
+    if (!ok) return; // nếu người dùng bấm Cancel thì dừng lại luôn
+
+    setLoading(true);
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) throw new Error("Unauthorized: No token found");
+
+      const res = await fetch(`${API_URL}/reviews/migrate-hasmedia`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!res.ok) {
+        const errorResponse = await res.json();
+        throw new Error(
+          errorResponse.message || "Có lỗi xảy ra khi gửi dữ liệu"
+        );
+      }
+
+      toast.success("Migrate thành công!");
+      setValue("");
+    } catch (error) {
+      toast.error(
+        error instanceof Error ? error.message : "Đã xảy ra lỗi không xác định"
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleSubmit = async () => {
     let parsedData;
@@ -111,6 +148,36 @@ function ImportReviewsPage() {
           <div className="flex justify-end">
             <Button disabled={loading} onClick={handleSubmit}>
               Import <ImportIcon />
+            </Button>
+          </div>
+          <div>
+            {" "}
+            <Button
+              variant="destructive"
+              disabled={loading}
+              onClick={handleMigrateMedia}
+            >
+              Migrate has Media <FolderSyncIcon />
+            </Button>
+          </div>
+          <div>
+            {" "}
+            <Button
+              variant="destructive"
+              disabled={loading}
+              onClick={handleMigrateMedia}
+            >
+              Migrate Rating <FolderSyncIcon />
+            </Button>
+          </div>
+          <div>
+            {" "}
+            <Button
+              variant="destructive"
+              disabled={loading}
+              onClick={handleMigrateMedia}
+            >
+              Migrate ID <FolderSyncIcon />
             </Button>
           </div>
         </div>
